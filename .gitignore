@@ -1,0 +1,6 @@
+fpga/*.bin
+fpga/*.log
+*.vcd
+results.xml
+sim_build/
+test/__pycache__/
