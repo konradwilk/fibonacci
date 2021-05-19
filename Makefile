@@ -1,6 +1,10 @@
 # FPGA variables
 PROJECT = fpga/fibonacci
-SOURCES = src/fibonacci.v
+SOURCES= src/fibonacci.v src/clkdiv.v fpga.v
+ICEBREAKER_DEVICE = up5k
+ICEBREAKER_PIN_DEF = fpga/icebreaker.pcf
+ICEBREAKER_PACKAGE = sg48
+SEED = 1
 
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
@@ -17,9 +21,26 @@ show_%: %.vcd %.gtkw
 	gtkwave $^
 
 lint:
-	verilator --lint-only src/*.v
+	verilator --lint-only ${SOURCES} --top-module fpga
 	verible-verilog-lint src/*v --rules_config verible.rules
 
 .PHONY: clean
 clean:
 	rm -rf *vcd sim_build fpga/*log fpga/*bin test/__pycache__
+
+# FPGA recipes
+
+show_synth_%: src/%.v
+	yosys -p "read_verilog $<; proc; opt; show -colors 2 -width -signed"
+
+%.json: $(SOURCES)
+	yosys -l fpga/yosys.log -DFPGA=1 -DWIDTH=8 -p 'synth_ice40 -top fpga -json $(PROJECT).json' $(SOURCES)
+
+%.asc: %.json $(ICEBREAKER_PIN_DEF)
+	nextpnr-ice40 -l fpga/nextpnr.log --seed $(SEED) --freq 20 --package $(ICEBREAKER_PACKAGE) --$(ICEBREAKER_DEVICE) --asc $@ --pcf $(ICEBREAKER_PIN_DEF) --json $<
+
+%.bin: %.asc
+	icepack $< $@
+
+prog: $(PROJECT).bin
+	iceprog $<
