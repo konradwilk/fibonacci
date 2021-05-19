@@ -18,7 +18,7 @@ show_%: %.vcd %.gtkw
 
 lint:
 	verilator --lint-only src/*.v
-	#verible-verilog-lint src/*v --rules_config verible.rules
+	verible-verilog-lint src/*v --rules_config verible.rules
 
 .PHONY: clean
 clean:

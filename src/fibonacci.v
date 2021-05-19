@@ -13,18 +13,18 @@ module fibonacci #(parameter WIDTH=32)
     wire msb;
 
     always @(posedge clk) begin
-	    if (reset) begin
+        if (reset) begin
+            current <= 1;
+            previous <= 0;
+        end else begin
+            if (msb) begin
                 current <= 1;
                 previous <= 0;
-        end else begin
-	     if (msb) begin
-		current <= 1;
-		previous <= 0;
-	     end else begin
-            	current <= current + previous;
-            	previous <= current;
-            end     
-	end
+            end else begin
+                current <= current + previous;
+                previous <= current;
+            end
+        end
     end
 
     assign value = reset ? {WIDTH{1'b0}}: previous;
