@@ -1,6 +1,6 @@
 # FPGA variables
 PROJECT = fpga/fibonacci
-SOURCES= src/fibonacci.v src/clkdiv.v fpga.v
+SOURCES= src/fibonacci.v src/clkdiv.v fpga.v wrapper.v
 ICEBREAKER_DEVICE = up5k
 ICEBREAKER_PIN_DEF = fpga/icebreaker.pcf
 ICEBREAKER_PACKAGE = sg48
@@ -16,6 +16,12 @@ test_fibonacci:
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -s fibonacci -s dump -g2012 src/fibonacci.v test/dump_fibonacci.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_fibonacci vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+
+test_wrapper:
+	rm -rf sim_build/
+	mkdir sim_build/
+	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -s wrapper -s dump -g2012 $(SOURCES) test/dump_wrapper.v
+	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 show_%: %.vcd %.gtkw
 	gtkwave $^
