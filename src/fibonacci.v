@@ -27,7 +27,7 @@ module fibonacci #(parameter WIDTH=32)
 	end
     end
 
-    assign value = reset ? 1'b0: previous;
+    assign value = reset ? {WIDTH{1'b0}}: previous;
     assign msb = current[WIDTH-1+0];
 
 endmodule
