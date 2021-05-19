@@ -4,3 +4,4 @@ fpga/*.log
 results.xml
 sim_build/
 test/__pycache__/
+properties/

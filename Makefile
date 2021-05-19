@@ -9,13 +9,16 @@ SEED = 1
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
 
-all: test_fibonacci
+all: test_fibonacci prove_fibonacci
 
 test_fibonacci:
 	rm -rf sim_build/
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -s fibonacci -s dump -g2012 src/fibonacci.v test/dump_fibonacci.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_fibonacci vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+
+prove_fibonacci:
+	sby -f properties.sby
 
 test_wrapper:
 	rm -rf sim_build/
