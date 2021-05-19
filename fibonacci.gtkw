@@ -1,0 +1,64 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Tue May 18 22:53:13 2021
+[*]
+[dumpfile] "/home/zerotoasic/fibonacci/fibonacci.vcd"
+[dumpfile_mtime] "Tue May 18 22:51:50 2021"
+[dumpfile_size] 4335
+[savefile] "/home/zerotoasic/fibonacci/fibonacci.gtkw"
+[timestart] 79998
+[size] 1600 835
+[pos] -1 -1
+*0.000000 80000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 241
+[signals_width] 257
+[sst_expanded] 1
+[sst_vpaned_height] 232
+@28
+fibonacci.clk
+@c00024
+fibonacci.current[31:0]
+@28
+(0)fibonacci.current[31:0]
+(1)fibonacci.current[31:0]
+(2)fibonacci.current[31:0]
+(3)fibonacci.current[31:0]
+(4)fibonacci.current[31:0]
+(5)fibonacci.current[31:0]
+(6)fibonacci.current[31:0]
+(7)fibonacci.current[31:0]
+(8)fibonacci.current[31:0]
+(9)fibonacci.current[31:0]
+(10)fibonacci.current[31:0]
+(11)fibonacci.current[31:0]
+(12)fibonacci.current[31:0]
+(13)fibonacci.current[31:0]
+(14)fibonacci.current[31:0]
+(15)fibonacci.current[31:0]
+(16)fibonacci.current[31:0]
+(17)fibonacci.current[31:0]
+(18)fibonacci.current[31:0]
+(19)fibonacci.current[31:0]
+(20)fibonacci.current[31:0]
+(21)fibonacci.current[31:0]
+(22)fibonacci.current[31:0]
+(23)fibonacci.current[31:0]
+(24)fibonacci.current[31:0]
+(25)fibonacci.current[31:0]
+(26)fibonacci.current[31:0]
+(27)fibonacci.current[31:0]
+(28)fibonacci.current[31:0]
+(29)fibonacci.current[31:0]
+(30)fibonacci.current[31:0]
+(31)fibonacci.current[31:0]
+@1401200
+-group_end
+@24
+fibonacci.previous[31:0]
+@28
+fibonacci.reset
+@25
+[color] 2
+fibonacci.value[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
