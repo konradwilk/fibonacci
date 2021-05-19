@@ -5,10 +5,11 @@ module clkdiv(
     output clkout
     );
 
-reg [15:0] counter;
-assign clkout = counter[15];
+   reg [15:0] counter;
+   assign clkout = counter[15];
 
-always @(posedge clk)
-	counter <= counter+1;
+   always @(posedge clk)
+     counter <= counter+1;
+
 endmodule
 

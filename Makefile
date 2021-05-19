@@ -22,7 +22,7 @@ show_%: %.vcd %.gtkw
 
 lint:
 	verilator --lint-only ${SOURCES} --top-module fpga
-	verible-verilog-lint src/*v --rules_config verible.rules
+	verible-verilog-lint $(SOURCES) --rules_config verible.rules
 
 .PHONY: clean
 clean:
