@@ -14,56 +14,68 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FIRMWARE_PATH = ../..
-RTL_PATH = ../../../../rtl
-IP_PATH = ../../../../ip
-BEHAVIOURAL_MODELS = ../../
+## Caravel Pointers
+CARAVEL_ROOT ?= ../../../caravel
+CARAVEL_PATH ?= $(CARAVEL_ROOT)
+CARAVEL_FIRMWARE_PATH = $(CARAVEL_PATH)/verilog/dv/caravel
+CARAVEL_VERILOG_PATH  = $(CARAVEL_PATH)/verilog
+CARAVEL_RTL_PATH = $(CARAVEL_VERILOG_PATH)/rtl
+CARAVEL_BEHAVIOURAL_MODELS = $(CARAVEL_VERILOG_PATH)/dv/caravel
 
-PROJECT_DIR = $(RTL_PATH)/fibonacci/
-PROJECT_FILES = $(addprefix $(PROJECT_DIR), \
-	wrapper.v \
-	src/fibonacci.v \
-)
+## User Project Pointers
+UPRJ_VERILOG_PATH ?= ../../../verilog
+UPRJ_RTL_PATH = $(UPRJ_VERILOG_PATH)/rtl
+UPRJ_BEHAVIOURAL_MODELS = ../
+
+## RISCV GCC
 GCC_PATH?=/ef/apps/bin
 GCC_PREFIX?=riscv32-unknown-elf
 PDK_PATH?=/ef/tech/SW/sky130A
 
+## Simulation mode: RTL/GL
 SIM?=RTL
+
+# include the modules that cocotb needs for test
+#export PYTHONPATH := $(UPRJ_RTL_PATH)/wrapped_wrapper/wrapper/test
 
 .SUFFIXES:
 
 PATTERN = wrapper
 
-all: test
+all:  coco_test
 
 hex:  ${PATTERN:=.hex}
 
-coco_test: wrapper.hex
+coco_test: ${PATTERN}.hex
 	rm -rf sim_build/
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -s wrapper_tb wrapper_tb.v -DSIM -DFUNCTIONAL \
-    -I $(BEHAVIOURAL_MODELS) -I $(PDK_PATH) -I $(IP_PATH) -I $(RTL_PATH) $(PROJECT_FILES)
-
-.PHONY: test
-test: coco_test
+	-I $(PDK_PATH) \
+	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) \
+	-I $(UPRJ_BEHAVIOURAL_MODELS)    -I $(UPRJ_RTL_PATH)
 	MODULE=test_caravel vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 %.vvp: %_tb.v %.hex
 ifeq ($(SIM),RTL)
-	iverilog -DFUNCTIONAL -DSIM  -I $(BEHAVIOURAL_MODELS) \
-	-I $(PDK_PATH) -I $(IP_PATH) -I $(RTL_PATH) \
+	iverilog -DFUNCTIONAL -DSIM -I $(PDK_PATH) \
+	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) \
+	-I $(UPRJ_BEHAVIOURAL_MODELS)    -I $(UPRJ_RTL_PATH) \
 	$< -o $@
 else
-	iverilog -DFUNCTIONAL -DSIM -DGL -I $(BEHAVIOURAL_MODELS) \
-	-I $(PDK_PATH) -I $(IP_PATH) -I $(RTL_PATH) \
+	iverilog -DFUNCTIONAL -DSIM -DGL -I $(PDK_PATH) \
+	-I $(CARAVEL_BEHAVIOURAL_MODELS) -I $(CARAVEL_RTL_PATH) -I $(CARAVEL_VERILOG_PATH) \
+	-I $(UPRJ_BEHAVIOURAL_MODELS) -I$(UPRJ_RTL_PATH)   -I $(UPRJ_VERILOG_PATH) \
 	$< -o $@
 endif
 
 %.vcd: %.vvp
-	vvp -i $<
+	vvp $<
 
-%.elf: %.c $(FIRMWARE_PATH)/sections.lds $(FIRMWARE_PATH)/start.s
-	${GCC_PATH}/${GCC_PREFIX}-gcc -march=rv32imc -mabi=ilp32 -Wl,-Bstatic,-T,$(FIRMWARE_PATH)/sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $(FIRMWARE_PATH)/start.s $<
+test:
+	echo ${GCC_PATH}/${GCC_PREFIX}-gcc -I $(CARAVEL_PATH) -march=rv32imc -mabi=ilp32 -Wl,-Bstatic,-T,$(CARAVEL_FIRMWARE_PATH)/sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $(CARAVEL_FIRMWARE_PATH)/start.s $<
+
+%.elf: %.c $(CARAVEL_FIRMWARE_PATH)/sections.lds $(CARAVEL_FIRMWARE_PATH)/start.s
+	${GCC_PATH}/${GCC_PREFIX}-gcc -I $(CARAVEL_PATH) -march=rv32imc -mabi=ilp32 -Wl,-Bstatic,-T,$(CARAVEL_FIRMWARE_PATH)/sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $(CARAVEL_FIRMWARE_PATH)/start.s $<
 
 %.hex: %.elf
 	${GCC_PATH}/${GCC_PREFIX}-objcopy -O verilog $< $@

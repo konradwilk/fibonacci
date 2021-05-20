@@ -5,6 +5,7 @@ always @(posedge wb_clk_i) begin
 	_active_wbs_ack: assert(wbs_ack_o == buf_wbs_ack_o );
 	_active_wbs_dat_o: assert(wbs_dat_o == buf_wbs_dat_o);
 	_active_la_data_out_ :assert(la_data_out == buf_la_data_out);
+	_irq_buf_ : assert(irq == buf_irq);
     end
     if(!active) begin
         // inactive properties here
@@ -13,5 +14,6 @@ always @(posedge wb_clk_i) begin
 	_wbs_dat_o: assert(wbs_dat_o == 32'b0);
 	_la_data_out: assert(la_data_out == 32'b0);
 	_io_oeb: assert(io_oeb == 32'b0);
+	_irq_ : assert(irq == 3'b0);
     end
 end

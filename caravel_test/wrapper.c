@@ -15,8 +15,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "../../defs.h"
-#include "../../stub.c"
+#include "verilog/dv/caravel/defs.h"
+#include "verilog/dv/caravel/stub.c"
 
 void configure_gpio(void)
 {
@@ -57,23 +57,25 @@ void configure_gpio(void)
 
 void activate(void)
 {
-	/* [31:0] is	reg_la0_ena, 0x2500,0010
-	 * [63:32] is	reg_la1_ena, 0x2500,0014
-	 * [95:64] is	reg_la2_ena  0x2500,0018
-	 * [127:96] is	reg_la3_ena  0x2500,001C
+	/* [31:0] is	reg_la0_oenb, 0x2500,0010
+	 * [63:32] is	reg_la1_oenb, 0x2500,0014
+	 * [95:64] is	reg_la2_oenb  0x2500,0018
+	 * [127:96] is	reg_la3_oenb  0x2500,001C
 	 *
 	 * All data go on la_data_in[127:0] , which starts
 	 * at 0x2500,0000
 	 */
-	reg_la1_ena = 0; /* 32th, corresponds to active */
+	reg_la1_iena = 0; /* 0x25000024: Input enable off */
+	reg_la1_oenb = 0; /* 0x25000014: 32th, corresponds to active */
 	/* .active() HIGH */
-	reg_la1_data = 1; /* 0x2500,0004 */
+	reg_la1_data = 1 << 0; /* 0x25000004 */
 }
 
 void reset(void)
 {
 	/* .reset(la_data_in[0]) */
-	reg_la0_ena = 0; /* 0x2500,0010 */
+	reg_la0_iena = 0;
+	reg_la0_oenb = 0; /* 0x2500,0010 */
 
 	reg_la0_data = 1; /* RST on 0x2500,0000*/
 	reg_la0_data = 0; /* RST off */
