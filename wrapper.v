@@ -75,7 +75,7 @@ module wrapper (
     fibonacci #(.WIDTH(32)) Fibonacci(
             .clk(wb_clk_i),
             .reset(la_data_in[0]),
-            .value(buf_io_out[32:0]));
+            .value(buf_io_out[31:0]));
 
 endmodule
 `default_nettype wire
