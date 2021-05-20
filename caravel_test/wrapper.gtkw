@@ -1,0 +1,41 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Thu May 20 00:41:28 2021
+[*]
+[dumpfile] "/home/zerotoasic/caravel/verilog/dv/caravel/user_proj_example/fibonacci/wrapper_tb.vcd"
+[dumpfile_mtime] "Thu May 20 00:36:56 2021"
+[dumpfile_size] 51473349
+[savefile] "/home/zerotoasic/caravel/verilog/dv/caravel/user_proj_example/fibonacci/wrapper.gtk.gtkw"
+[timestart] 0
+[size] 2553 1014
+[pos] -1 -1
+*-24.000000 82460000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] wrapper_tb.
+[treeopen] wrapper_tb.uut.
+[treeopen] wrapper_tb.uut.mprj.
+[treeopen] wrapper_tb.uut.mprj.proj_0.
+[sst_width] 214
+[signals_width] 330
+[sst_expanded] 1
+[sst_vpaned_height] 298
+@28
+wrapper_tb.clock
+@22
+wrapper_tb.mprj_io[37:0]
+@23
+wrapper_tb.uut.mprj.proj_0.wbs_adr_i[31:0]
+@22
+wrapper_tb.uut.mprj.proj_0.wbs_dat_i[31:0]
+wrapper_tb.uut.mprj.proj_0.la_data_in[31:0]
+wrapper_tb.uut.mprj.proj_0.la_oen[31:0]
+wrapper_tb.uut.mprj.proj_0.buf_io_out[37:0]
+@28
+wrapper_tb.uut.mprj.proj_0.active
+@200
+-
+@22
+wrapper_tb.uut.mprj.proj_0.Fibonacci.current[31:0]
+@28
+wrapper_tb.uut.mprj.proj_0.Fibonacci.reset
+[pattern_trace] 1
+[pattern_trace] 0
