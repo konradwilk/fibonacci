@@ -19,8 +19,8 @@ async def activate_project(dut, number, compare):
 async def test_tri(dut):
     clock = Clock(dut.wb_clk_i, 10, units="ns")
     cocotb.fork(clock.start())
-    dut.VGND <= 0
-    dut.VPWR <= 1
+    dut.vssd1 <= 0
+    dut.vccd1 <= 1
     dut.active <= 0 # outputs tristated to start with
 
     dut.wb_rst_i <= 1
