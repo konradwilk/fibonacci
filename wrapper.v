@@ -60,8 +60,8 @@ module wrapper (
     assign wbs_ack_o    = active ? buf_wbs_ack_o    : 1'b0;
     assign wbs_dat_o    = active ? buf_wbs_dat_o    : 32'b0;
     assign la_data_out  = active ? buf_la_data_out  : 32'b0;
-    assign io_out       = active ? buf_io_out       : `MPRJ_IO_PADS'b0;
-    assign io_oeb       = active ? buf_io_oeb       : `MPRJ_IO_PADS'b0;
+    assign io_out       = active ? buf_io_out       : {`MPRJ_IO_PADS{1'b0}};
+    assign io_oeb       = active ? buf_io_oeb       : {`MPRJ_IO_PADS{1'b0}};
     assign irq		= active ? buf_irq          : 3'b0; 
     `include "properties.v"
     `else
@@ -69,13 +69,13 @@ module wrapper (
     assign wbs_ack_o    = active ? buf_wbs_ack_o    : 1'bz;
     assign wbs_dat_o    = active ? buf_wbs_dat_o    : 32'bz;
     assign la_data_out  = active ? buf_la_data_out  : 32'bz;
-    assign io_out       = active ? buf_io_out       : `MPRJ_IO_PADS'bz;
-    assign io_oeb       = active ? buf_io_oeb       : `MPRJ_IO_PADS'bz;
+    assign io_out       = active ? buf_io_out       : {`MPRJ_IO_PADS{1'bz}};
+    assign io_oeb       = active ? buf_io_oeb       : {`MPRJ_IO_PADS{1'bz}};
     assign irq		= active ? buf_irq          : 3'bz; 
     `endif
 
     // permanently set oeb so that outputs are always enabled: 0 is output, 1 is high-impedance
-    assign buf_io_oeb = `MPRJ_IO_PADS'h0;
+    assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
     // instantiate your module here, connecting what you need of the above signals
 
     fibonacci #(.WIDTH(32)) Fibonacci(
