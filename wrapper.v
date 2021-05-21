@@ -114,7 +114,6 @@ module wrapper #(
     always @(posedge wb_clk_i) begin
 	    if (reset) begin
 		    fibonacci_switch <= 1'b1;
-		    buffer <= ACK_OFF;
 		    buffer_o <= ACK_OFF;
 		    clock_op <= 6'b000001;
 	    end else begin
@@ -143,17 +142,21 @@ module wrapper #(
      end
 
      always @(posedge wb_clk_i) begin
-	     /* Write case */
-	     if (wb_active && wbs_we_i && &wbs_sel_i &&
-		 (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
-		     case (wbs_adr_i[5:0])
-			     CTRL_WRITE:
-				     buffer <= wbs_dat_i;
-			     CTRL_PANIC:
-				     buffer <= wbs_dat_i;
-			     default:
-				     buffer <= ACK_OFF;
-		     endcase
+	     if (reset) begin
+		     buffer <= ACK_OFF;
+	     end else begin
+		     /* Write case */
+		     if (wb_active && wbs_we_i && &wbs_sel_i &&
+			 (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
+			     case (wbs_adr_i[5:0])
+				     CTRL_WRITE:
+					     buffer <= wbs_dat_i;
+				     CTRL_PANIC:
+					     buffer <= wbs_dat_i;
+				     default:
+					     buffer <= ACK_OFF;
+			     endcase
+		     end
 	     end
      end
 
