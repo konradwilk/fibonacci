@@ -61,7 +61,7 @@ async def test_values(dut):
     prio_value = 0;
     p_prio_value = 0;
 
-    for i in range(50):
+    for i in range(43):
         # We get these annoying 'ZZ' in there, so we do this dance to get rid of it.
         value = BinaryValue(str(dut.mprj_io.value).replace('z',''));
 

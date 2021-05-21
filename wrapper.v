@@ -78,10 +78,10 @@ module wrapper (
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
     // instantiate your module here, connecting what you need of the above signals
 
-    fibonacci #(.WIDTH(32)) Fibonacci(
+    fibonacci #(.WIDTH(30)) Fibonacci(
             .clk(wb_clk_i),
             .reset(la_data_in[0]),
-            .value(buf_io_out[31:0]));
+            .value(buf_io_out[37:8]));
 
 endmodule
 `default_nettype wire
