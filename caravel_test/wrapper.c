@@ -18,6 +18,30 @@
 #include "verilog/dv/caravel/defs.h"
 #include "verilog/dv/caravel/stub.c"
 
+#define BASE_ADDRESS 		0x30000000
+#define CTRL_GET_NR		(BASE_ADDRESS + 0x00)
+#define CTRL_GET_ID		(BASE_ADDRESS + 0x04)
+#define CTRL_SET_IRQ		(BASE_ADDRESS + 0x08)
+#define CTRL_FIBONACCI_CTRL	(BASE_ADDRESS + 0x0c)
+#define CTRL_FIBONACCI_VAL	(BASE_ADDRESS + 0x14)
+#define CTRL_WRITE		(BASE_ADDRESS + 0x18)
+#define CTRL_READ		(BASE_ADDRESS + 0x1C)
+#define CTRL_PANIC		(BASE_ADDRESS + 0x20)
+
+#define CTRL_ID			0x4669626
+#define CTRL_NR			8
+
+static uint32_t read(unsigned long addr)
+{
+	return *(volatile uint32_t *)addr;
+}
+
+static void write(unsigned long addr, uint32_t val)
+{
+	*(volatile uint32_t *)addr = val;
+}
+
+
 void configure_gpio(void)
 {
         reg_mprj_io_37 = GPIO_MODE_USER_STD_OUTPUT;
@@ -79,6 +103,35 @@ void reset(void)
 	reg_la0_data = 0; /* RST off */
 }
 
+void panic(uint32_t line)
+{
+	/* TODO: Strobe LEDs */
+	do {
+		write(CTRL_PANIC, __LINE__);
+	} while (1);
+
+}
+#define BUG_ON(x) { if (x) panic(__LINE__); }
+
+
+void wishbone_test(void)
+{
+	uint32_t val;
+
+	val = read(CTRL_GET_NR);
+	BUG_ON(val != CTRL_NR);
+	val = read(CTRL_GET_ID);
+	BUG_ON(val != CTRL_ID);
+	write(CTRL_FIBONACCI_CTRL, 0);
+	BUG_ON(read(CTRL_FIBONACCI_CTRL) != 0);
+	write(CTRL_FIBONACCI_CTRL, 1);
+	BUG_ON(read(CTRL_FIBONACCI_CTRL) != 1);
+	read(CTRL_FIBONACCI_VAL);
+
+	val = 0xdeadbeef;
+	write(CTRL_WRITE, val);
+	BUG_ON(read(CTRL_READ) != val);
+}
 void main()
 {
 	// All GPIO pins are configured to be output
