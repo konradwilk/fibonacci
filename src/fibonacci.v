@@ -5,6 +5,7 @@ module fibonacci #(parameter WIDTH=32)
     (
         input wire clk,
         input wire reset,
+        input wire on,
         output wire [WIDTH-1:0] value
     );
 
@@ -21,7 +22,8 @@ module fibonacci #(parameter WIDTH=32)
                 current <= 1;
                 previous <= 0;
             end else begin
-                current <= current + previous;
+                if (on)
+                    current <= current + previous;
                 previous <= current;
             end
         end

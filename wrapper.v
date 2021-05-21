@@ -6,7 +6,9 @@
 `ifdef VERILATOR
     `define MPRJ_IO_PADS 38
 `endif
-module wrapper (
+module wrapper #(
+    parameter   [28:0]  BASE_ADDRESS   = 28'h03000000
+    ) (
 `ifdef USE_POWER_PINS
     inout vdda1,	// User area 1 3.3V supply
     inout vdda2,	// User area 2 3.3V supply
@@ -20,12 +22,12 @@ module wrapper (
     // interface as user_proj_example.v
     input wire wb_clk_i,
     input wire wb_rst_i,
-    input wire wbs_stb_i,
+    input wire wbs_stb_i, /* strobe */
     input wire wbs_cyc_i,
     input wire wbs_we_i,
     input wire [3:0] wbs_sel_i,
     input wire [31:0] wbs_dat_i,
-    input wire [31:0] wbs_adr_i,
+    input wire [32:0] wbs_adr_i,
     output wire wbs_ack_o,
     output wire [31:0] wbs_dat_o,
 
@@ -76,11 +78,88 @@ module wrapper (
 
     // permanently set oeb so that outputs are always enabled: 0 is output, 1 is high-impedance
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
+
+    wire reset = la_data_in[0];
+
+    wire wb_active = wbs_stb_i & wbs_cyc_i;
+    reg fibonacci_switch;
+    reg [32:0] buffer;
     // instantiate your module here, connecting what you need of the above signals
 
+    /* CTRL_GET parameters. */
+    localparam CTRL_GET_NR		= 4'h00; /* How many */
+    localparam CTRL_NR 			= 2'h8;
+
+    localparam CTRL_GET_ID		= 4'h04;
+    localparam CTRL_ID			= 32'h4669626f; /* Fibo */
+
+    /* CTRL_SET parameters */
+    localparam CTRL_SET_IRQ		= 4'h08;
+    localparam ACK_OK			= 32'h0000001;
+    localparam ACK_OFF			= 32'h0000000;
+    localparam CTRL_FIBONACCI_ON 	= 4'h0C;
+    localparam CTRL_FIBONACCI_OFF	= 4'h10;
+    localparam CTRL_FIBONACCI_VAL	= 4'h14;
+    localparam CTRL_WRITE	  	= 4'h18;
+    localparam CTRL_READ	  	= 4'h1C;
+    localparam CTRL_PANIC	  	= 4'h20;
+
+    always @(posedge clk) begin
+	    if (reset) begin
+		    fibonacci_switch <= 1'b1;
+		    wbs_dat_o <= ACK_OFF;
+		    buffer <= ACK_OFF;
+	    end else begin
+		    /* Read case */
+		    if (wb_active && !wbs_we_i) begin
+			    case (wbs_adr_i)
+				    {BASE_ADDRESS,CTRL_GET_NR}:
+					    wbs_dat_o <=  {28'b0, CTRL_NR};
+				    {BASE_ADDRESS,CTRL_GET_ID}:
+					    wbs_dat_o <= CTRL_ID;
+				    {BASE_ADDRESS,CTRL_SET_IRQ}:
+					    wbs_dat_o <= ACK_OK;
+				    {BASE_ADDRESS,CTRL_FIBONACCI_ON}:
+				    begin
+					    wbs_dat_o <= ACK_OK;
+					    fibonacci_switch <= 1'b1;
+				    end
+				    {BASE_ADDRESS,CTRL_FIBONACCI_OFF}:
+				    begin
+					    wbs_dat_o <= ACK_OK;
+					    fibonacci_switch <= 1'b0;
+				    end
+				    {BASE_ADDRESS,CTRL_FIBONACCI_VAL}:
+					    wbs_dat_o <= {2'h0, buf_io_out[37:8]};
+				    {BASE_ADDRESS,CTRL_READ}:
+					    wbs_dat_o <= buffer;
+			             default:
+					     wbs_dat_o <= ACK_OFF;
+				endcase
+		     end
+	     end
+     end
+
+     always @(posedge clk) begin
+	     /* Write case */
+	     if (wb_active && wbs_we_i && &wbs_sel_i) begin
+		     case (wbs_addr)
+			     {BASE_ADDRESS,CTRL_WRITE}:
+				     buffer <= wbs_dat_i;
+			     {BASE_ADDRESS,CTRL_PANIC}:
+				     buffer <= wbs_dat_i;
+			     default:
+				     buffer <= ACK_OFF;
+		     endcase
+	     end
+     end
+
+					
+				
     fibonacci #(.WIDTH(30)) Fibonacci(
             .clk(wb_clk_i),
-            .reset(la_data_in[0]),
+            .reset(reset),
+	    .on(fibonacci_switch),
             .value(buf_io_out[37:8]));
 
 endmodule
