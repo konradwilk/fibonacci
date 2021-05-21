@@ -99,8 +99,9 @@ module wrapper #(
     localparam CTRL_SET_IRQ		= 'h08;
     localparam ACK_OK			= 32'h0000001;
     localparam ACK_OFF			= 32'h0000000;
-    localparam CTRL_FIBONACCI_ON 	= 'h0C;
-    localparam CTRL_FIBONACCI_OFF	= 'h10;
+    localparam CTRL_FIBONACCI_CTRL 	= 'h0C;
+    localparam TURN_ON			= 1'b1;
+    localparam TURN_OFF			= 1'b0;
     localparam CTRL_FIBONACCI_VAL	= 'h14;
     localparam CTRL_WRITE	  	= 'h18;
     localparam CTRL_READ	  	= 'h1C;
@@ -114,23 +115,15 @@ module wrapper #(
 	    end else begin
 		    /* Read case */
 		    if (wb_active && !wbs_we_i && (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
-			    case (wbs_adr_i[4:0])
+			    case (wbs_adr_i[5:0])
 				    CTRL_GET_NR:
 					    buffer_o <= CTRL_NR;
 				    CTRL_GET_ID:
 					    buffer_o <= CTRL_ID;
 				    CTRL_SET_IRQ:
 					    buffer_o <= ACK_OK;
-				    CTRL_FIBONACCI_ON:
-				    begin
-					    buffer_o <= ACK_OK;
-					    fibonacci_switch <= 1'b1;
-				    end
-				    CTRL_FIBONACCI_OFF:
-				    begin
-					    buffer_o <= ACK_OK;
-					    fibonacci_switch <= 1'b0;
-				    end
+				    CTRL_FIBONACCI_CTRL:
+					    fibonacci_switch <= wbs_dat_i[0];
 				    CTRL_FIBONACCI_VAL:
 					    buffer_o <= {2'h0, buf_io_out[37:8]};
 				    CTRL_READ:
@@ -144,8 +137,9 @@ module wrapper #(
 
      always @(posedge wb_clk_i) begin
 	     /* Write case */
-	     if (wb_active && wbs_we_i && &wbs_sel_i) begin
-		     case (wbs_adr_i)
+	     if (wb_active && wbs_we_i && &wbs_sel_i &&
+		 (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
+		     case (wbs_adr_i[5:0])
 			     CTRL_WRITE:
 				     buffer <= wbs_dat_i;
 			     CTRL_PANIC:
@@ -155,6 +149,10 @@ module wrapper #(
 		     endcase
 	     end
      end
+
+     assign buf_wbs_ack_o = reset ? 1'b0 : (wb_active &&
+					   ((wbs_adr_i[32:5] == BASE_ADDRESS) &&
+					    (wbs_adr_i[5:0] <= CTRL_PANIC)));
 
     assign buf_wbs_dat_o = reset ? 32'b0 : buffer_o;
 
