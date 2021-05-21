@@ -1,6 +1,6 @@
 # FPGA variables
 PROJECT = fpga/fibonacci
-SOURCES= src/fibonacci.v src/clkdiv.v fpga.v wrapper.v
+SOURCES= src/fibonacci.v src/clkdiv.v src/wb_logic.v fpga.v wrapper.v
 ICEBREAKER_DEVICE = up5k
 ICEBREAKER_PIN_DEF = fpga/icebreaker.pcf
 ICEBREAKER_PACKAGE = sg48

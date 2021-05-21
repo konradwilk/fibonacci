@@ -5,7 +5,7 @@ mode prove
 smtbmc
 
 [script]
-read -formal wrapper.v fibonacci.v clkdiv.v
+read -formal wrapper.v fibonacci.v clkdiv.v wb_logic.v
 prep -top wrapper
 
 [files]
@@ -13,3 +13,4 @@ wrapper.v
 properties.v
 src/fibonacci.v
 src/clkdiv.v
+src/wb_logic.v

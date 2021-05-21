@@ -80,25 +80,25 @@ module wrapper #(
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
 
     wire reset = la_data_in[0];
+    wire [5:0] clock_op;
 
+    wire fibonacci_clock;
+    wire fibonacci_switch;
+    wire [5:0] clocks;
+
+/*
     wire wb_active = wbs_stb_i & wbs_cyc_i;
-    reg fibonacci_switch;
     reg [31:0] buffer;
     reg [31:0] buffer_o;
-    reg [5:0] clock_op;
-    wire [5:0] clocks;
-    wire fibonacci_clock;
 
-    // instantiate your module here, connecting what you need of the above signals
 
-    /* CTRL_GET parameters. */
-    localparam CTRL_GET_NR		= 'h00; /* How many */
+    
+    localparam CTRL_GET_NR		= 'h00;
     localparam CTRL_NR 			= 'h8;
 
     localparam CTRL_GET_ID		= 'h04;
-    localparam CTRL_ID			= 32'h4669626f; /* Fibo */
+    localparam CTRL_ID			= 32'h4669626f;
 
-    /* CTRL_SET parameters */
     localparam CTRL_SET_IRQ		= 'h08;
     localparam ACK_OK			= 32'h0000001;
     localparam ACK_OFF			= 32'h0000000;
@@ -117,7 +117,6 @@ module wrapper #(
 		    buffer_o <= ACK_OFF;
 		    clock_op <= 6'b000001;
 	    end else begin
-		    /* Read case */
 		    if (wb_active && !wbs_we_i && (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
 			    case (wbs_adr_i[5:0])
 				    CTRL_GET_NR:
@@ -145,7 +144,7 @@ module wrapper #(
 	     if (reset) begin
 		     buffer <= ACK_OFF;
 	     end else begin
-		     /* Write case */
+		     
 		     if (wb_active && wbs_we_i && &wbs_sel_i &&
 			 (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
 			     case (wbs_adr_i[5:0])
@@ -165,7 +164,7 @@ module wrapper #(
 					    (wbs_adr_i[5:0] <= CTRL_PANIC)));
 
     assign buf_wbs_dat_o = reset ? 32'b0 : buffer_o;
-
+*/
     clkdiv #(.WIDTH(8)) Clock_1 (
 	    .clk(wb_clk_i),
 	    .clkout(clocks[1]));
@@ -185,6 +184,23 @@ module wrapper #(
     clkdiv #(.WIDTH(36)) Clock_5 (
 	    .clk(wb_clk_i),
 	    .clkout(clocks[5]));
+
+    wb_logic WishBone (
+	    .buf_io_out(buf_io_out),
+	    .reset(reset),
+	    .irq(buf_irq),
+	    .clock_sel(clock_op),
+	    .switch(fibonacci_switch),
+    	    .wb_clk_i(wb_clk_i),
+    	    .wb_rst_i(wb_rst_i),
+    	    .wbs_stb_i(wbs_stb_i),
+            .wbs_cyc_i(wbs_cyc_i),
+    	    .wbs_we_i(wbs_we_i),
+    	    .wbs_sel_i(wbs_sel_i),
+    	    .wbs_dat_i(wbs_dat_i),
+    	    .wbs_adr_i(wbs_adr_i),
+    	    .wbs_ack_o(buf_wbs_ack_o),
+    	    .wbs_dat_o(buf_wbs_dat_o));
 
     assign clocks[0] = wb_clk_i;
 
