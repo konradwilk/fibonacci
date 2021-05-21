@@ -7,7 +7,7 @@
     `define MPRJ_IO_PADS 38
 `endif
 module wrapper #(
-    parameter    [28:0] BASE_ADDRESS   = 28'h0300000
+    parameter    [27:0] BASE_ADDRESS   = 28'h0300000
     ) (
 `ifdef USE_POWER_PINS
     inout vdda1,	// User area 1 3.3V supply
@@ -83,7 +83,9 @@ module wrapper #(
 
     wire wb_active = wbs_stb_i & wbs_cyc_i;
     reg fibonacci_switch;
-    reg [32:0] buffer;
+    reg [31:0] buffer;
+    reg [31:0] buffer_o;
+
     // instantiate your module here, connecting what you need of the above signals
 
     /* CTRL_GET parameters. */
@@ -107,34 +109,34 @@ module wrapper #(
     always @(posedge wb_clk_i) begin
 	    if (reset) begin
 		    fibonacci_switch <= 1'b1;
-		    wbs_dat_o <= ACK_OFF;
 		    buffer <= ACK_OFF;
+		    buffer_o <= ACK_OFF;
 	    end else begin
 		    /* Read case */
-		    if (wb_active && !wbs_we_i) begin
-			    case (wbs_adr_i)
-				    {BASE_ADDRESS,CTRL_GET_NR}:
-					    wbs_dat_o <=  {28'b0, CTRL_NR};
-				    {BASE_ADDRESS,CTRL_GET_ID}:
-					    wbs_dat_o <= CTRL_ID;
-				    {BASE_ADDRESS,CTRL_SET_IRQ}:
-					    wbs_dat_o <= ACK_OK;
-				    {BASE_ADDRESS,CTRL_FIBONACCI_ON}:
+		    if (wb_active && !wbs_we_i && (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
+			    case (wbs_adr_i[4:0])
+				    CTRL_GET_NR:
+					    buffer_o <= CTRL_NR;
+				    CTRL_GET_ID:
+					    buffer_o <= CTRL_ID;
+				    CTRL_SET_IRQ:
+					    buffer_o <= ACK_OK;
+				    CTRL_FIBONACCI_ON:
 				    begin
-					    wbs_dat_o <= ACK_OK;
+					    buffer_o <= ACK_OK;
 					    fibonacci_switch <= 1'b1;
 				    end
-				    {BASE_ADDRESS,CTRL_FIBONACCI_OFF}:
+				    CTRL_FIBONACCI_OFF:
 				    begin
-					    wbs_dat_o <= ACK_OK;
+					    buffer_o <= ACK_OK;
 					    fibonacci_switch <= 1'b0;
 				    end
-				    {BASE_ADDRESS,CTRL_FIBONACCI_VAL}:
-					    wbs_dat_o <= {2'h0, buf_io_out[37:8]};
-				    {BASE_ADDRESS,CTRL_READ}:
-					    wbs_dat_o <= buffer;
+				    CTRL_FIBONACCI_VAL:
+					    buffer_o <= {2'h0, buf_io_out[37:8]};
+				    CTRL_READ:
+					    buffer_o <= buffer;
 			             default:
-					     wbs_dat_o <= ACK_OFF;
+					    buffer_o <= ACK_OFF;
 				endcase
 		     end
 	     end
@@ -143,16 +145,18 @@ module wrapper #(
      always @(posedge wb_clk_i) begin
 	     /* Write case */
 	     if (wb_active && wbs_we_i && &wbs_sel_i) begin
-		     case (wbs_addr)
-			     {BASE_ADDRESS,CTRL_WRITE}:
+		     case (wbs_adr_i)
+			     CTRL_WRITE:
 				     buffer <= wbs_dat_i;
-			     {BASE_ADDRESS,CTRL_PANIC}:
+			     CTRL_PANIC:
 				     buffer <= wbs_dat_i;
 			     default:
 				     buffer <= ACK_OFF;
 		     endcase
 	     end
      end
+
+    assign buf_wbs_dat_o = reset ? 32'b0 : buffer_o;
 
     fibonacci #(.WIDTH(30)) Fibonacci(
             .clk(wb_clk_i),
