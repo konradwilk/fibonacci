@@ -23,14 +23,14 @@ prove_fibonacci:
 test_wrapper:
 	rm -rf sim_build/
 	mkdir sim_build/
-	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=33 -s wrapper -s dump -g2012 $(SOURCES) test/dump_wrapper.v
+	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -s wrapper -s dump -g2012 $(SOURCES) test/dump_wrapper.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 show_%: %.vcd %.gtkw
 	gtkwave $^
 
 lint:
-	verilator --lint-only ${SOURCES} --top-module fpga
+	verilator --lint-only ${SOURCES} --top-module wrapper
 	verible-verilog-lint $(SOURCES) --rules_config verible.rules
 
 .PHONY: clean

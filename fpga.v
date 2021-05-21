@@ -24,6 +24,7 @@ module fpga #(parameter WIDTH=`WIDTH) (
 `endif
 
     fibonacci #(.WIDTH(`WIDTH)) Fibonacci(.clk(clock),
+	    .on(1),
             .reset(reset),
             .value(value));
 endmodule

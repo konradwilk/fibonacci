@@ -7,7 +7,7 @@
     `define MPRJ_IO_PADS 38
 `endif
 module wrapper #(
-    parameter   [28:0]  BASE_ADDRESS   = 28'h03000000
+    parameter    [28:0] BASE_ADDRESS   = 28'h0300000
     ) (
 `ifdef USE_POWER_PINS
     inout vdda1,	// User area 1 3.3V supply
@@ -64,7 +64,7 @@ module wrapper #(
     assign la_data_out  = active ? buf_la_data_out  : 32'b0;
     assign io_out       = active ? buf_io_out       : {`MPRJ_IO_PADS{1'b0}};
     assign io_oeb       = active ? buf_io_oeb       : {`MPRJ_IO_PADS{1'b0}};
-    assign irq		= active ? buf_irq          : 3'b0; 
+    assign irq		= active ? buf_irq          : 3'b0;
     `include "properties.v"
     `else
     // tristate buffers
@@ -73,7 +73,7 @@ module wrapper #(
     assign la_data_out  = active ? buf_la_data_out  : 32'bz;
     assign io_out       = active ? buf_io_out       : {`MPRJ_IO_PADS{1'bz}};
     assign io_oeb       = active ? buf_io_oeb       : {`MPRJ_IO_PADS{1'bz}};
-    assign irq		= active ? buf_irq          : 3'bz; 
+    assign irq		= active ? buf_irq          : 3'bz;
     `endif
 
     // permanently set oeb so that outputs are always enabled: 0 is output, 1 is high-impedance
@@ -87,24 +87,24 @@ module wrapper #(
     // instantiate your module here, connecting what you need of the above signals
 
     /* CTRL_GET parameters. */
-    localparam CTRL_GET_NR		= 4'h00; /* How many */
-    localparam CTRL_NR 			= 2'h8;
+    localparam CTRL_GET_NR		= 'h00; /* How many */
+    localparam CTRL_NR 			= 'h8;
 
-    localparam CTRL_GET_ID		= 4'h04;
+    localparam CTRL_GET_ID		= 'h04;
     localparam CTRL_ID			= 32'h4669626f; /* Fibo */
 
     /* CTRL_SET parameters */
-    localparam CTRL_SET_IRQ		= 4'h08;
+    localparam CTRL_SET_IRQ		= 'h08;
     localparam ACK_OK			= 32'h0000001;
     localparam ACK_OFF			= 32'h0000000;
-    localparam CTRL_FIBONACCI_ON 	= 4'h0C;
-    localparam CTRL_FIBONACCI_OFF	= 4'h10;
-    localparam CTRL_FIBONACCI_VAL	= 4'h14;
-    localparam CTRL_WRITE	  	= 4'h18;
-    localparam CTRL_READ	  	= 4'h1C;
-    localparam CTRL_PANIC	  	= 4'h20;
+    localparam CTRL_FIBONACCI_ON 	= 'h0C;
+    localparam CTRL_FIBONACCI_OFF	= 'h10;
+    localparam CTRL_FIBONACCI_VAL	= 'h14;
+    localparam CTRL_WRITE	  	= 'h18;
+    localparam CTRL_READ	  	= 'h1C;
+    localparam CTRL_PANIC	  	= 'h20;
 
-    always @(posedge clk) begin
+    always @(posedge wb_clk_i) begin
 	    if (reset) begin
 		    fibonacci_switch <= 1'b1;
 		    wbs_dat_o <= ACK_OFF;
@@ -140,7 +140,7 @@ module wrapper #(
 	     end
      end
 
-     always @(posedge clk) begin
+     always @(posedge wb_clk_i) begin
 	     /* Write case */
 	     if (wb_active && wbs_we_i && &wbs_sel_i) begin
 		     case (wbs_addr)
@@ -154,8 +154,6 @@ module wrapper #(
 	     end
      end
 
-					
-				
     fibonacci #(.WIDTH(30)) Fibonacci(
             .clk(wb_clk_i),
             .reset(reset),

@@ -15,6 +15,7 @@ async def test_fibonacci(dut):
     cocotb.fork(clock.start())
 
     await reset(dut)
+    dut.on <= 1;
 
     prio_value = int(dut.value);
     p_prio_value = int(dut.value);
