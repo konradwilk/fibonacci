@@ -64,7 +64,7 @@ module wb_logic #(
 	    if (reset) begin
 		    fibonacci_switch <= 1'b1;
 		    buffer_o <= ACK_OFF;
-		    clock_op <= {CLOCK_WIDTH{1'b0}};
+		    clock_op <= 6'b000001; /* TODO: Move this out? */
 	    end else begin
 		    /* Read case */
 		    if (wb_active && !wbs_we_i && (wbs_adr_i[32:ADDR_LEN] == BASE_ADDRESS)) begin

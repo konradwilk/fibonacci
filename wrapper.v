@@ -165,6 +165,8 @@ module wrapper #(
 
     assign buf_wbs_dat_o = reset ? 32'b0 : buffer_o;
 */
+    assign clocks[0] = wb_clk_i;
+
     clkdiv #(.WIDTH(8)) Clock_1 (
 	    .clk(wb_clk_i),
 	    .clkout(clocks[1]));
@@ -202,14 +204,12 @@ module wrapper #(
     	    .wbs_ack_o(buf_wbs_ack_o),
     	    .wbs_dat_o(buf_wbs_dat_o));
 
-    assign clocks[0] = wb_clk_i;
-
     assign fibonacci_clock = clock_op[5] ? clocks[5] :
 	    			(clock_op[4] ? clocks[4] :
 				 (clock_op[3] ? clocks[3] :
 				  (clock_op[2] ? clocks[2] :
 				   (clock_op[1] ? clocks[1] :
-				    (clock_op[0] ? clocks[0] : 1'b0)))));
+				    clocks[0]))));
 
     fibonacci #(.WIDTH(30)) Fibonacci(
             .clk(fibonacci_clock),
