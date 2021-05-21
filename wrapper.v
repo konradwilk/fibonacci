@@ -85,6 +85,9 @@ module wrapper #(
     reg fibonacci_switch;
     reg [31:0] buffer;
     reg [31:0] buffer_o;
+    reg [5:0] clock_op;
+    wire [5:0] clocks;
+    wire fibonacci_clock;
 
     // instantiate your module here, connecting what you need of the above signals
 
@@ -99,6 +102,7 @@ module wrapper #(
     localparam CTRL_SET_IRQ		= 'h08;
     localparam ACK_OK			= 32'h0000001;
     localparam ACK_OFF			= 32'h0000000;
+    localparam CTRL_CLOCK		= 'h10;
     localparam CTRL_FIBONACCI_CTRL 	= 'h0C;
     localparam TURN_ON			= 1'b1;
     localparam TURN_OFF			= 1'b0;
@@ -112,6 +116,7 @@ module wrapper #(
 		    fibonacci_switch <= 1'b1;
 		    buffer <= ACK_OFF;
 		    buffer_o <= ACK_OFF;
+		    clock_op <= 6'b000001;
 	    end else begin
 		    /* Read case */
 		    if (wb_active && !wbs_we_i && (wbs_adr_i[32:5] == BASE_ADDRESS)) begin
@@ -122,6 +127,8 @@ module wrapper #(
 					    buffer_o <= CTRL_ID;
 				    CTRL_SET_IRQ:
 					    buffer_o <= ACK_OK;
+				    CTRL_CLOCK:
+					    clock_op <= wbs_dat_i[5:0];
 				    CTRL_FIBONACCI_CTRL:
 					    fibonacci_switch <= wbs_dat_i[0];
 				    CTRL_FIBONACCI_VAL:
@@ -156,8 +163,37 @@ module wrapper #(
 
     assign buf_wbs_dat_o = reset ? 32'b0 : buffer_o;
 
+    clkdiv #(.WIDTH(8)) Clock_1 (
+	    .clk(wb_clk_i),
+	    .clkout(clocks[1]));
+
+    clkdiv #(.WIDTH(16)) Clock_2 (
+	    .clk(wb_clk_i),
+	    .clkout(clocks[2]));
+
+    clkdiv #(.WIDTH(24)) Clock_3 (
+	    .clk(wb_clk_i),
+	    .clkout(clocks[3]));
+
+    clkdiv #(.WIDTH(32)) Clock_4 (
+	    .clk(wb_clk_i),
+	    .clkout(clocks[4]));
+
+    clkdiv #(.WIDTH(36)) Clock_5 (
+	    .clk(wb_clk_i),
+	    .clkout(clocks[5]));
+
+    assign clocks[0] = wb_clk_i;
+
+    assign fibonacci_clock = clock_op[5] ? clocks[5] :
+	    			(clock_op[4] ? clocks[4] :
+				 (clock_op[3] ? clocks[3] :
+				  (clock_op[2] ? clocks[2] :
+				   (clock_op[1] ? clocks[1] :
+				    (clock_op[0] ? clocks[0] : 1'b0)))));
+
     fibonacci #(.WIDTH(30)) Fibonacci(
-            .clk(wb_clk_i),
+            .clk(fibonacci_clock),
             .reset(reset),
 	    .on(fibonacci_switch),
             .value(buf_io_out[37:8]));

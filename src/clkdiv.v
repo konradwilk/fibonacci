@@ -1,12 +1,13 @@
 `timescale 1ns / 1ps
 
-module clkdiv(
+module clkdiv #(parameter WIDTH=32) (
     input clk,
     output clkout
     );
 
-   reg [15:0] counter;
-   assign clkout = counter[15];
+   reg [WIDTH-1:0] counter;
+
+   assign clkout = counter[WIDTH-1];
 
    always @(posedge clk)
      counter <= counter+1;

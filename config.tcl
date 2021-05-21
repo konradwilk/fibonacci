@@ -4,7 +4,7 @@ set script_dir [file dirname [file normalize [info script]]]
 set ::env(DESIGN_NAME) wrapper
 
 # Change if needed
-set ::env(VERILOG_FILES) "./designs/fibonacci/wrapper.v ./designs/fibonacci/src/fibonacci.v"
+set ::env(VERILOG_FILES) "./designs/fibonacci/wrapper.v ./designs/fibonacci/src/fibonacci.v ./designs/fibonacci/src/clkdiv.v"
 
 # Fill this
 set ::env(CLOCK_PERIOD) "10"
