@@ -2,6 +2,7 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.binary import BinaryValue
 from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge;
+from cocotb.result import TestSuccess;
 
 @cocotb.test()
 async def test_start(dut):
@@ -61,9 +62,7 @@ async def test_wb(dut, i):
         if (addr == 0x30000020): # CTRL_PANIC
             assert (data_i == 0x0badf00d); # It is a write..
 
-            raise TestComplete("Done = input=%h output=%h" % (hex(data_i), hex(data)));
-
-
+            raise TestSuccess
 
 @cocotb.test()
 async def test_values(dut):
@@ -116,4 +115,3 @@ async def test_values(dut):
 
         await ClockCycles(dut.clock,1)
         await test_wb(dut, i);
-
