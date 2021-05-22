@@ -1,0 +1,49 @@
+--- 
+# information
+project:
+  title: "Fibonacci"
+  description: "Fibonacci emitter connected to [37:8] and controlled via wishbone"
+  picture: gds/wrapper.gds.png
+  author: "Konrad Rzeszutek Wilk"
+  github: https://github.com/konradwilk/fibonacci
+  license: LICENSE
+
+# test within caravel
+caravel_test:
+  recipe: "all"
+  directory: "caravel_test"
+  id: 3
+  module_name: "wrapped_fibonacci"
+  instance_name: "wrapped_fibonacci"
+
+# module test
+module_test:
+  recipe: "test_wrapper"
+  directory: "."
+  makefile: "Makefile"
+
+# run the wrapper formal proof
+wrapper_proof:
+  directory: "."
+  sby: "properties.sby"
+
+
+# openlane config, used in case I need to re-harden
+openlane:
+  config: "config.tcl"
+
+
+# source required for various configs and module instantiation
+source:
+    - src/wrapper.v
+    - src/clkdiv.v
+    - src/fibonacci.v
+    - src/wb_logic.v
+
+# gds - check size = 300x300, nothing on metal 5, do a DRC, check 141 tristate buffers, check LVS
+gds:
+  directory: "gds"
+  gds_filename: "wrapped_fibonacci.gds"
+  lvs_filename: "wrapped_fibonacci.lvs.powered.v"
+  lef_filename: "wrapped_fibonacci.lef"
+
