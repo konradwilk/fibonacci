@@ -8,7 +8,7 @@
 `endif
 
 module wb_logic #(
-    parameter    [27:0] BASE_ADDRESS   = 28'h0300000,
+    parameter    [32:0] BASE_ADDRESS   = 32'h30000000,
     parameter CLOCK_WIDTH = 6
     ) (
     input wire [`MPRJ_IO_PADS-1:0] buf_io_out,
@@ -41,24 +41,24 @@ module wb_logic #(
 
     localparam ADDR_LEN			= 5;
     /* CTRL_GET parameters. */
-    localparam CTRL_GET_NR		= 'h00; /* How many */
-    localparam CTRL_NR 			= 'h8;
+    localparam CTRL_GET_NR		= BASE_ADDRESS;
+    localparam CTRL_NR 			= 8;
 
-    localparam CTRL_GET_ID		= 'h04;
+    localparam CTRL_GET_ID		= BASE_ADDRESS + 'h4;
     localparam CTRL_ID			= 32'h4669626f; /* Fibo */
 
     /* CTRL_SET parameters */
-    localparam CTRL_SET_IRQ		= 'h08;
+    localparam CTRL_SET_IRQ		= BASE_ADDRESS + 'h8;
     localparam ACK_OK			= 32'h0000001;
     localparam ACK_OFF			= 32'h0000000;
-    localparam CTRL_CLOCK		= 'h10;
-    localparam CTRL_FIBONACCI_CTRL 	= 'h0C;
+    localparam CTRL_CLOCK		= BASE_ADDRESS + 'h10;
+    localparam CTRL_FIBONACCI_CTRL 	= BASE_ADDRESS + 'h0C;
     localparam TURN_ON			= 1'b1;
     localparam TURN_OFF			= 1'b0;
-    localparam CTRL_FIBONACCI_VAL	= 'h14;
-    localparam CTRL_WRITE	  	= 'h18;
-    localparam CTRL_READ	  	= 'h1C;
-    localparam CTRL_PANIC	  	= 'h20;
+    localparam CTRL_FIBONACCI_VAL	= BASE_ADDRESS + 'h14;
+    localparam CTRL_WRITE	  	= BASE_ADDRESS + 'h18;
+    localparam CTRL_READ	  	= BASE_ADDRESS + 'h1C;
+    localparam CTRL_PANIC	  	= BASE_ADDRESS + 'h20;
 
     always @(posedge wb_clk_i) begin
 	    if (reset) begin
@@ -67,8 +67,8 @@ module wb_logic #(
 		    clock_op <= 6'b000001; /* TODO: Move this out? */
 	    end else begin
 		    /* Read case */
-		    if (wb_active && !wbs_we_i && (wbs_adr_i[32:ADDR_LEN] == BASE_ADDRESS)) begin
-			    case (wbs_adr_i[ADDR_LEN:0])
+		    if (wb_active && !wbs_we_i) begin
+			    case (wbs_adr_i)
 				    CTRL_GET_NR:
 					    buffer_o <= CTRL_NR;
 				    CTRL_GET_ID:
@@ -95,9 +95,8 @@ module wb_logic #(
 		     buffer <= ACK_OFF;
 	     end else begin
 		     /* Write case */
-		     if (wb_active && wbs_we_i && &wbs_sel_i &&
-			 (wbs_adr_i[32:ADDR_LEN] == BASE_ADDRESS)) begin
-			     case (wbs_adr_i[ADDR_LEN:0])
+		     if (wb_active && wbs_we_i && &wbs_sel_i) begin
+			     case (wbs_adr_i)
 				     CTRL_WRITE:
 					     buffer <= wbs_dat_i;
 				     CTRL_PANIC:
@@ -110,12 +109,12 @@ module wb_logic #(
      end
 
      assign wbs_ack_o = reset ? 1'b0 : (wb_active &&
-					   ((wbs_adr_i[32:ADDR_LEN] == BASE_ADDRESS) &&
-					    (wbs_adr_i[ADDR_LEN:0] <= CTRL_PANIC)));
+					   (wbs_adr_i >= BASE_ADDRESS));
 
     assign wbs_dat_o = reset ? 32'b0 : buffer_o;
 
     assign switch = reset ? 1'b0 : fibonacci_switch;
+
     assign clock_sel = reset ? {CLOCK_WIDTH{1'b0}} : clock_op;
 
 endmodule
