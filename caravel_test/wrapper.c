@@ -109,7 +109,7 @@ void panic(uint32_t line)
 	/* TODO: Strobe LEDs or UART. 6/7*/
 	do {
 		write(CTRL_PANIC, line);
-	} while (0);
+	} while (1);
 
 }
 #define BUG_ON(x) { if ((x)) panic(__LINE__); }
@@ -122,32 +122,23 @@ void wishbone_test(void)
 	uint32_t val;
 
 	val = read(CTRL_GET_ID);
-	write(CTRL_WRITE, val);
 	BUG_ON(val != CTRL_ID);
 
 	val = read(CTRL_GET_NR);
-	write(CTRL_WRITE, val);
 	BUG_ON(val != CTRL_NR);
-
-	val = read(CTRL_GET_ID);
-	write(CTRL_WRITE, val);
-	BUG_ON(val != CTRL_ID);
 
 	write(CTRL_FIBONACCI_CTRL, 0);
 	val = read(CTRL_FIBONACCI_CTRL);
-	write(CTRL_WRITE, val);
         BUG_ON(val != 0);
 
 	write(CTRL_FIBONACCI_CTRL, 1);
 	val = read(CTRL_FIBONACCI_CTRL);
-	write(CTRL_WRITE, val);
         BUG_ON(val != 1);
 
 	val = read(CTRL_FIBONACCI_VAL);
 
 	write(CTRL_WRITE, MAGIC_VAL);
 	val = read(CTRL_READ);
-	write(CTRL_WRITE, val);
 	BUG_ON(val != MAGIC_VAL);
 
 	val = 1 << 1;

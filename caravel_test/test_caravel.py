@@ -37,33 +37,32 @@ async def test_start(dut):
 
 async def test_wb(dut, i):
 
+    ack_str = "";
     addr = int(dut.uut.mprj.wrapper_fibonacci.wbs_adr_i.value);
-    data = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value);
+    data = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_o.value);
     ack = int(dut.uut.mprj.wrapper_fibonacci.wbs_ack_o.value);
-    if (addr >= int(hex(0x30000000))):
-        print("%2d wb_rst_i = %s" % (i, dut.uut.mprj.wrapper_fibonacci.wb_rst_i.value));
-        print("%2d wbs_stb_i = %s" % (i, dut.uut.mprj.wrapper_fibonacci.wbs_stb_i.value));
-        print("%2d wbs_we_i = %s" % (i, dut.uut.mprj.wrapper_fibonacci.wbs_we_i.value));
-        print("%2d wbs_sel_i = %s" % (i, dut.uut.mprj.wrapper_fibonacci.wbs_sel_i.value));
-        print("%2d wbs_dat_i = %s" % (i, hex(data)));
-        print("%2d wbs_adr_i = %s" % (i, hex(addr)));
-        print("%2d wbs_dat_o = %s" % (i, hex(int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_o.value))));
-        print("%2d wbs_ack_o = %d" % (i, ack));
+    data_i = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value);
+
+    if (addr >= 0x30000000):
+        if (ack == 1):
+            ack_str = "ACK";
+
+        dut._log.info("%s %s %s DATA_IN=%s DATA_OUT=%s" % (dut.clock, hex(addr), ack_str,  hex(data_i), hex(data)));
+
         if (ack == 0):
             return;
 
-        if (addr == int(hex(0x30000004))): # CTRL_GET_NR
+        if (addr == 0x30000000): # CTRL_GET_NR
             assert(data == 9);
 
-        if (addr == int(hex(0x30000004))): # CTRL_GET_ID 
-            assert(str(data) == 'Fibo');
+        if (addr == 0x30000004): # CTRL_GET_ID
+            assert(data == 0x4669626f);
 
-        if (addr == int(hex(0x30000020))): # CTRL_PANIC
-            if (data == int(hex(0x0badf00d))):
-                raise TestComplete("Done = %h %h" % (hex(int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value)), hex(int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_o.value))));
+        if (addr == 0x30000020): # CTRL_PANIC
+            assert (data_i == 0x0badf00d); # It is a write..
 
-        if (addr == int(hex(0x30000024))):
-            raise TestComplete("Done = %h %h" % (hex(int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value)), hex(int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_o.value))));
+            raise TestComplete("Done = input=%h output=%h" % (hex(data_i), hex(data)));
+
 
 
 @cocotb.test()
