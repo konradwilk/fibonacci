@@ -76,6 +76,11 @@ module wb_logic #(
     always @(posedge wb_clk_i) begin
 	    if (reset) begin
 		    buffer_o <= DEFAULT;
+		    buffer <= DEFAULT;
+		    tickle_irq <= 3'b0;
+		    panic <= 1'b0;
+		    fibonacci_switch <= 1'b1;
+		    clock_op <= 6'b000001; /* TODO: Move this out? */
 	    end else begin
 
 		    /* Read case */
@@ -100,20 +105,9 @@ module wb_logic #(
 			             default:
 					    buffer_o <= NACK;
 				endcase
-		     end
-	     end
-     end
-
-     always @(posedge wb_clk_i) begin
-	     if (reset) begin
-		     buffer <= DEFAULT;
-		     tickle_irq <= 3'b0;
-		     panic <= 1'b0;
-		    fibonacci_switch <= 1'b1;
-		    clock_op <= 6'b000001; /* TODO: Move this out? */
-	     end else begin
-		     /* Write case */
-		     if (wb_active && wbs_we_i && &wbs_sel_i) begin
+		    end
+		    /* Write case */
+		    if (wb_active && wbs_we_i && &wbs_sel_i) begin
 			     case (wbs_adr_i)
 				    CTRL_SET_IRQ:
 				    begin
