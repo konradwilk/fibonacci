@@ -164,4 +164,4 @@ module wb_logic #(
     assign irq_out = reset ? 3'bzzz : (|tickle_irq ? tickle_irq : 3'bzzz);
 
 endmodule
-
+`default_nettype wire
