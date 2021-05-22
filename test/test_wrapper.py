@@ -32,8 +32,8 @@ async def test_wrapper(dut):
     dut.la_data_in <= 0 << 0
     await ClockCycles(dut.wb_clk_i,1) 
 
-    value = BinaryValue(str(dut.io_out.value).replace('z',''));
-    print("%d" % (value));
+    value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
+    print("%s" % (value));
     #assert (int(value) == 0);
 
     prio_value = 0;
@@ -44,19 +44,20 @@ async def test_wrapper(dut):
         # assert still low
         assert dut.la_data_in == 0
 
-        value = BinaryValue(str(dut.io_out.value).replace('z',''));
+        value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
+        #print("value %s io_out = %s" % (value, dut.io_out.value));
         current_value  = int(value);
 
-        if (i == 0) or (i == 44):
+        if (i == 0) or ((i > 0) and ((i % 44) == 0)):
             prio_value = 0;
             p_prio_value = 0;
-        if (i == 1) or (i == 45):
+        if (i == 1) or ((i > 1) and ((i % 45) == 0)):
             p_prio_value = 0;
             prio_value = 1;
 
         #print("i = %d p_prio_value=%d,prio_value=%d,current_value=%d" % (i, p_prio_value, prio_value, current_value));
         assert (current_value == (prio_value + p_prio_value));
-        if (i >= 2) and ((i != 44) and (i != 45)):
+        if (i >= 2) and ((i % 44) and (i % 45)):
             p_prio_value = prio_value;
             prio_value = current_value;
 
