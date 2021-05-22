@@ -13,8 +13,8 @@ caravel_test:
   recipe: "all"
   directory: "caravel_test"
   id: 3
-  module_name: "wrapped_fibonacci"
-  instance_name: "wrapped_fibonacci"
+  module_name: "wrapper_fibonacci"
+  instance_name: "wrapper_fibonacci"
 
 # module test
 module_test:
@@ -43,7 +43,7 @@ source:
 # gds - check size = 300x300, nothing on metal 5, do a DRC, check 141 tristate buffers, check LVS
 gds:
   directory: "gds"
-  gds_filename: "wrapped_fibonacci.gds"
-  lvs_filename: "wrapped_fibonacci.lvs.powered.v"
-  lef_filename: "wrapped_fibonacci.lef"
+  gds_filename: "wrapper_fibonacci.gds"
+  lvs_filename: "wrapper_fibonacci.lvs.powered.v"
+  lef_filename: "wrapper_fibonacci.lef"
 
