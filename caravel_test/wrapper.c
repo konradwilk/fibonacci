@@ -22,13 +22,14 @@
 #define CTRL_GET_NR		(BASE_ADDRESS + 0x00)
 #define CTRL_GET_ID		(BASE_ADDRESS + 0x04)
 #define CTRL_SET_IRQ		(BASE_ADDRESS + 0x08)
-#define CTRL_FIBONACCI_CTRL	(BASE_ADDRESS + 0x0c)
+#define CTRL_FIBONACCI_CTRL	(BASE_ADDRESS + 0x0d)
+#define CTRL_FIBONACCI_CLOCK	(BASE_ADDRESS + 0x10)
 #define CTRL_FIBONACCI_VAL	(BASE_ADDRESS + 0x14)
 #define CTRL_WRITE		(BASE_ADDRESS + 0x18)
 #define CTRL_READ		(BASE_ADDRESS + 0x1C)
 #define CTRL_PANIC		(BASE_ADDRESS + 0x20)
 
-#define CTRL_ID			0x4669626
+#define CTRL_ID			0x4669626f
 #define CTRL_NR			8
 
 static uint32_t read(unsigned long addr)
@@ -105,32 +106,49 @@ void reset(void)
 
 void panic(uint32_t line)
 {
-	/* TODO: Strobe LEDs */
+	/* TODO: Strobe LEDs or UART. 6/7*/
 	do {
 		write(CTRL_PANIC, __LINE__);
-	} while (1);
+	} while (0);
 
 }
-#define BUG_ON(x) { if (x) panic(__LINE__); }
+#define BUG_ON(x) { if ((x)) panic(__LINE__); }
 
+#define MAGIC_VAL 0xdeadbeef
+#define MAGIC_END 0x0badf00d
 
 void wishbone_test(void)
 {
 	uint32_t val;
 
-	val = read(CTRL_GET_NR);
-	BUG_ON(val != CTRL_NR);
 	val = read(CTRL_GET_ID);
 	BUG_ON(val != CTRL_ID);
-	write(CTRL_FIBONACCI_CTRL, 0);
-	BUG_ON(read(CTRL_FIBONACCI_CTRL) != 0);
-	write(CTRL_FIBONACCI_CTRL, 1);
-	BUG_ON(read(CTRL_FIBONACCI_CTRL) != 1);
-	read(CTRL_FIBONACCI_VAL);
 
-	val = 0xdeadbeef;
-	write(CTRL_WRITE, val);
-	BUG_ON(read(CTRL_READ) != val);
+	val = read(CTRL_GET_NR);
+	BUG_ON(val != CTRL_NR);
+
+	val = read(CTRL_GET_ID);
+	BUG_ON(val != CTRL_ID);
+
+	write(CTRL_FIBONACCI_CTRL, 0);
+	val = read(CTRL_FIBONACCI_CTRL);
+        BUG_ON(val != 0);
+
+	write(CTRL_FIBONACCI_CTRL, 1);
+	val = read(CTRL_FIBONACCI_CTRL);
+        BUG_ON(val != 1);
+
+	val = read(CTRL_FIBONACCI_VAL);
+
+	write(CTRL_WRITE, MAGIC_VAL);
+	val = read(CTRL_READ);
+	BUG_ON(val != MAGIC_VAL);
+
+	val = 1 << 1;
+	write(CTRL_FIBONACCI_CLOCK, val);
+	write(CTRL_SET_IRQ, val);
+
+	write(CTRL_PANIC + 4, MAGIC_END);
 }
 void main()
 {
@@ -144,6 +162,8 @@ void main()
 	activate();
 
 	reset();
+
+	wishbone_test();
 	/* There it goes .. */
 }
 
