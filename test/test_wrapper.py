@@ -9,6 +9,11 @@ async def test_wrapper(dut):
     cocotb.fork(clock.start())
 
     clocks_per_phase = 5
+    try:
+        dut.vssd1 <= 0
+        dut.vccd1 <= 1
+    except:
+        pass
 
     dut.active <= 0
     dut.wb_rst_i <= 1
@@ -16,8 +21,9 @@ async def test_wrapper(dut):
     dut.wb_rst_i <= 0
     dut.la_data_in <= 0
 
+    dut._log.info("io_out=%s" % (dut.io_out.value));
     # We get these annoying 'ZZ' in there, so we do this dance to get rid of it.
-    value = BinaryValue(str(dut.io_out.value).replace('z',''));
+    value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
 
     assert(str(value) == "");
 
@@ -31,6 +37,7 @@ async def test_wrapper(dut):
     dut.la_data_in <= 0 << 0
     await ClockCycles(dut.wb_clk_i,1) 
 
+    dut._log.info("io_out=%s" % (dut.io_out.value));
     value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
     #assert (int(value) == 0);
 
@@ -43,7 +50,7 @@ async def test_wrapper(dut):
         assert dut.la_data_in == 0
 
         value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
-        #print("value %s io_out = %s" % (value, dut.io_out.value));
+        dut._log.info("%2d: io_out = %s" % (i, dut.io_out.value));
         current_value  = int(value);
 
         if (i == 0) or ((i > 0) and ((i % 44) == 0)):
@@ -53,7 +60,7 @@ async def test_wrapper(dut):
             p_prio_value = 0;
             prio_value = 1;
 
-        #print("i = %d p_prio_value=%d,prio_value=%d,current_value=%d" % (i, p_prio_value, prio_value, current_value));
+        dut._log.info("i = %d p_prio_value=%d,prio_value=%d,current_value=%d" % (i, p_prio_value, prio_value, current_value));
         assert (current_value == (prio_value + p_prio_value));
         if (i >= 2) and ((i % 44) and (i % 45)):
             p_prio_value = prio_value;

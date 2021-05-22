@@ -14,6 +14,12 @@ all: test_fibonacci test_wb_logic prove_fibonacci test_wrapper test_gds
 test_gds:
 	$(MAKE) -C gds
 
+test_lvs_wrapper:
+	rm -rf sim_build/
+	mkdir sim_build/
+	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -I $(PDK_ROOT)/sky130A/ -s wrapper_fibonacci -s dump -g2012 gds/wrapper_fibonacci.lvs.powered.v  test/dump_wrapper.v
+	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+
 test_fibonacci:
 	rm -rf sim_build/
 	mkdir sim_build/
