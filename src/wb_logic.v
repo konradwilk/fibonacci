@@ -39,6 +39,8 @@ module wb_logic #(
     reg fibonacci_switch;
     reg [CLOCK_WIDTH-1:0] clock_op;
     reg transmit;
+    reg [2:0] tickle_irq;
+    reg panic;
 
     /* CTRL_GET parameters. */
     localparam CTRL_GET_NR		= BASE_ADDRESS;
@@ -49,9 +51,9 @@ module wb_logic #(
     localparam DEFAULT			= 32'hf00df00d;
     /* CTRL_SET parameters */
     localparam CTRL_SET_IRQ		= BASE_ADDRESS + 'h8;
-    localparam ACK_OK			= 32'h0000001;
-    localparam ACK_OFF			= 32'h0000000;
-    localparam CTRL_CLOCK		= BASE_ADDRESS + 'h10;
+    localparam ACK			= 32'h0000001;
+    localparam NACK			= 32'h0000000;
+    localparam CTRL_FIBONACCI_CLOCK	= BASE_ADDRESS + 'h10;
     localparam CTRL_FIBONACCI_CTRL 	= BASE_ADDRESS + 'h0C;
     localparam TURN_ON			= 1'b1;
     localparam TURN_OFF			= 1'b0;
@@ -66,29 +68,32 @@ module wb_logic #(
 		    buffer_o <= DEFAULT;
 		    clock_op <= 6'b000001; /* TODO: Move this out? */
 		    transmit <= 1'b0;
+		    panic <= 1'b0;
 	    end else begin
-		    /* Read case */
 		    if (transmit)
 			    transmit <= 1'b0;
 
+		    /* Read case */
 		    if (wb_active && !wbs_we_i) begin
 			    case (wbs_adr_i)
 				    CTRL_GET_NR:
+				    begin
 					    buffer_o <= CTRL_NR;
+				    end
 				    CTRL_GET_ID:
 					    buffer_o <= CTRL_ID;
-				    CTRL_SET_IRQ:
-					    buffer_o <= ACK_OK;
-				    CTRL_CLOCK:
-					    clock_op <= wbs_dat_i[CLOCK_WIDTH-1:0];
+				    CTRL_FIBONACCI_CLOCK:
+					    buffer_o <= {29'b0, clock_op};
 				    CTRL_FIBONACCI_CTRL:
-					    fibonacci_switch <= wbs_dat_i[0];
+					    buffer_o <= {31'b0, fibonacci_switch};
 				    CTRL_FIBONACCI_VAL:
 					    buffer_o <= {2'h0, buf_io_out[37:8]};
 				    CTRL_READ:
 					    buffer_o <= buffer;
+				    CTRL_PANIC:
+					    buffer_o <= {31'b0, panic};
 			             default:
-					    buffer_o <= ACK_OFF;
+					    buffer_o <= NACK;
 				endcase
 				transmit <= 1'b1;
 		     end
@@ -98,17 +103,41 @@ module wb_logic #(
      always @(posedge wb_clk_i) begin
 	     if (reset) begin
 		     buffer <= DEFAULT;
+		     tickle_irq <= 3'b0;
 	     end else begin
 		     /* Write case */
 		     if (wb_active && wbs_we_i && &wbs_sel_i) begin
 			     case (wbs_adr_i)
+				    CTRL_SET_IRQ:
+				    begin
+					    tickle_irq <= wbs_dat_i[2:0];
+					    buffer_o <= ACK;
+				    end
+				    CTRL_FIBONACCI_CTRL:
+					begin
+					    fibonacci_switch <= wbs_dat_i[0];
+					    buffer_o <= ACK;
+				    end
+				    CTRL_FIBONACCI_CLOCK:
+				    begin
+					    clock_op <= wbs_dat_i[CLOCK_WIDTH-1:0];
+					    buffer_o <= ACK;
+				    end
 				     CTRL_WRITE:
+				     begin
 					     buffer <= wbs_dat_i;
+					     buffer_o <= ACK;
+				     end
 				     CTRL_PANIC:
+				     begin
+					     panic <= 1'b1;
 					     buffer <= wbs_dat_i;
+					     buffer_o <= ACK;
+				     end
 				     default:
-					     buffer <= ACK_OFF;
+					     buffer_o <= NACK;
 			     endcase
+			     transmit <= 1'b1;
 		     end
 	     end
      end
@@ -132,5 +161,6 @@ module wb_logic #(
 
     assign clock_sel = reset ? {CLOCK_WIDTH{1'b0}} : clock_op;
 
+    assign irq = tickle_irq;
 endmodule
 
