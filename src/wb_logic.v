@@ -38,6 +38,7 @@ module wb_logic #(
     reg [31:0] buffer_o;
     reg fibonacci_switch;
     reg [CLOCK_WIDTH-1:0] clock_op;
+    reg transmit;
 
     /* CTRL_GET parameters. */
     localparam CTRL_GET_NR		= BASE_ADDRESS;
@@ -45,7 +46,7 @@ module wb_logic #(
 
     localparam CTRL_GET_ID		= BASE_ADDRESS + 'h4;
     localparam CTRL_ID			= 32'h4669626f; /* Fibo */
-
+    localparam DEFAULT			= 32'hf00df00d;
     /* CTRL_SET parameters */
     localparam CTRL_SET_IRQ		= BASE_ADDRESS + 'h8;
     localparam ACK_OK			= 32'h0000001;
@@ -62,10 +63,14 @@ module wb_logic #(
     always @(posedge wb_clk_i) begin
 	    if (reset) begin
 		    fibonacci_switch <= 1'b1;
-		    buffer_o <= ACK_OFF;
+		    buffer_o <= DEFAULT;
 		    clock_op <= 6'b000001; /* TODO: Move this out? */
+		    transmit <= 1'b0;
 	    end else begin
 		    /* Read case */
+		    if (transmit)
+			    transmit <= 1'b0;
+
 		    if (wb_active && !wbs_we_i) begin
 			    case (wbs_adr_i)
 				    CTRL_GET_NR:
@@ -85,13 +90,14 @@ module wb_logic #(
 			             default:
 					    buffer_o <= ACK_OFF;
 				endcase
+				transmit <= 1'b1;
 		     end
 	     end
      end
 
      always @(posedge wb_clk_i) begin
 	     if (reset) begin
-		     buffer <= ACK_OFF;
+		     buffer <= DEFAULT;
 	     end else begin
 		     /* Write case */
 		     if (wb_active && wbs_we_i && &wbs_sel_i) begin
@@ -106,8 +112,18 @@ module wb_logic #(
 		     end
 	     end
      end
+     /*
+     always @(posedge wb_clk_i) begin
+	     if (reset) begin
+		     wbs_ack_o <= 1'b0;
+		     wbs_dat_o <= 32'b0;
+	     end else begin
+		     wbs_ack_o <= wb_active;
+	     	     wbs_dat_o <= wb_active ? buffer_o : 32'b0;
+	     end
+    end*/
 
-     assign wbs_ack_o = reset ? 1'b0 : (wb_active &&
+     assign wbs_ack_o = reset ? 1'b0 : (wb_active && transmit &&
 					   (wbs_adr_i >= BASE_ADDRESS));
 
     assign wbs_dat_o = reset ? 32'b0 : buffer_o;
