@@ -91,7 +91,7 @@ void activate(void)
 	reg_la1_iena = 0 << 3; /* 0x25000024: Input enable off */
 	reg_la1_oenb = 0 << 3; /* 0x25000014: 32th, corresponds to active */
 	/* .active() HIGH */
-	reg_la1_data = 1 << 0; /* 0x25000004 */
+	reg_la1_data = 1 << 3; /* 0x25000004 */
 }
 
 void reset(void)
@@ -154,7 +154,7 @@ void wishbone_test(void)
 	write(CTRL_FIBONACCI_CLOCK, val);
 	write(CTRL_SET_IRQ, val);
 
-	write(CTRL_PANIC + 4, MAGIC_END);
+	write(CTRL_PANIC, MAGIC_END);
 }
 void main()
 {
