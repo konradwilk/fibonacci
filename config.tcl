@@ -1,7 +1,7 @@
 # User config
 set script_dir [file dirname [file normalize [info script]]]
 
-set ::env(DESIGN_NAME) wrapper
+set ::env(DESIGN_NAME) wrapper_fibonacci
 
 # Change if needed
 set ::env(VERILOG_FILES) "./designs/fibonacci/wrapper.v \

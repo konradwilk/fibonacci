@@ -6,7 +6,7 @@ smtbmc
 
 [script]
 read -formal wrapper.v fibonacci.v clkdiv.v wb_logic.v
-prep -top wrapper
+prep -top wrapper_fibonacci
 
 [files]
 wrapper.v

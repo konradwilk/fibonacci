@@ -6,9 +6,7 @@
 `ifdef VERILATOR
     `define MPRJ_IO_PADS 38
 `endif
-module wrapper #(
-    parameter    [27:0] BASE_ADDRESS   = 28'h0300000
-    ) (
+module wrapper_fibonacci  (
 `ifdef USE_POWER_PINS
     inout vdda1,	// User area 1 3.3V supply
     inout vdda2,	// User area 2 3.3V supply
