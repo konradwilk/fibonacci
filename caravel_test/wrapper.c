@@ -108,7 +108,7 @@ void panic(uint32_t line)
 {
 	/* TODO: Strobe LEDs or UART. 6/7*/
 	do {
-		write(CTRL_PANIC, __LINE__);
+		write(CTRL_PANIC, line);
 	} while (0);
 
 }
