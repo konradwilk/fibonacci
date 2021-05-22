@@ -9,7 +9,10 @@ SEED = 1
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
 
-all: test_fibonacci test_wb_logic prove_fibonacci test_wrapper
+all: test_fibonacci test_wb_logic prove_fibonacci test_wrapper test_gds
+
+test_gds:
+	$(MAKE) -C gds
 
 test_fibonacci:
 	rm -rf sim_build/
