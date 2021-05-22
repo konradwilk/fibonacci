@@ -9,8 +9,8 @@ read -formal wrapper.v fibonacci.v clkdiv.v wb_logic.v
 prep -top wrapper_fibonacci
 
 [files]
-wrapper.v
-properties.v
+src/wrapper.v
+src/properties.v
 src/fibonacci.v
 src/clkdiv.v
 src/wb_logic.v
