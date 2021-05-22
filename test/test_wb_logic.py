@@ -39,22 +39,22 @@ async def test_id(dut, wbs):
 
 async def test_irq(dut, wbs):
 
-    dut.irq <= 0;
+    dut.irq_out <= 0;
     await ClockCycles(dut.wb_clk_i, 5)
-    assert dut.irq == 0
+    assert dut.irq_out == 0
 
     val = await write_val(dut, wbs, CTRL_SET_IRQ, 1);
     assert(val == 1);
 
     await ClockCycles(dut.wb_clk_i, 5)
-    assert (dut.irq == 1)
+    assert (dut.irq_out == 1)
 
     val = await write_val(dut, wbs, CTRL_SET_IRQ, 0);
     assert(val == 1);
 
     await ClockCycles(dut.wb_clk_i, 5)
-    dut._log.info("%s" % (dut.irq.value));
-    assert(str(dut.irq.value) == 'zzz');
+    dut._log.info("%s" % (dut.irq_out.value));
+    assert(str(dut.irq_out.value) == 'zzz');
 
 async def test_read_write(dut, wbs):
 
@@ -121,7 +121,7 @@ async def test_clock_op(dut, wbs):
     val = await read_val(dut, wbs, CTRL_FIBONACCI_CLOCK, exp);
     assert (val == exp)
 
-    assert(dut.clock_sel == 1<<1);
+    assert(dut.clock_sel_out == 1<<1);
 
 async def test_panic(dut, wbs):
 

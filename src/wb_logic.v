@@ -13,10 +13,10 @@ module wb_logic #(
     ) (
     input wire [`MPRJ_IO_PADS-1:0] buf_io_out,
     input wire reset,
-    output wire [2:0] irq,
+    output wire [2:0] irq_out,
 
-    output wire [CLOCK_WIDTH-1:0] clock_sel,
-    output wire switch,
+    output wire [CLOCK_WIDTH-1:0] clock_sel_out,
+    output wire switch_out,
     /* WishBone logic */
 
     input wire wb_clk_i,
@@ -157,11 +157,11 @@ module wb_logic #(
 
     assign wbs_dat_o = reset ? 32'b0 : buffer_o;
 
-    assign switch = reset ? 1'b0 : fibonacci_switch;
+    assign switch_out = reset ? 1'b0 : fibonacci_switch;
 
-    assign clock_sel = reset ? {CLOCK_WIDTH{1'b0}} : clock_op;
+    assign clock_sel_out = reset ? {CLOCK_WIDTH{1'b0}} : clock_op;
 
-    assign irq = reset ? 3'bzzz : (|tickle_irq ? tickle_irq : 3'bzzz);
+    assign irq_out = reset ? 3'bzzz : (|tickle_irq ? tickle_irq : 3'bzzz);
 
 endmodule
 
