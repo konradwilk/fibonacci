@@ -30,7 +30,7 @@
 #define CTRL_PANIC		(BASE_ADDRESS + 0x20)
 
 #define CTRL_ID			0x4669626f
-#define CTRL_NR			8
+#define CTRL_NR			9
 
 static uint32_t read(unsigned long addr)
 {

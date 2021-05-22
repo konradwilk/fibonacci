@@ -39,10 +39,9 @@ module wb_logic #(
     reg fibonacci_switch;
     reg [CLOCK_WIDTH-1:0] clock_op;
 
-    localparam ADDR_LEN			= 5;
     /* CTRL_GET parameters. */
     localparam CTRL_GET_NR		= BASE_ADDRESS;
-    localparam CTRL_NR 			= 8;
+    localparam CTRL_NR 			= 9;
 
     localparam CTRL_GET_ID		= BASE_ADDRESS + 'h4;
     localparam CTRL_ID			= 32'h4669626f; /* Fibo */
