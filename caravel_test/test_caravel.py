@@ -28,7 +28,7 @@ async def test_start(dut):
     await ClockCycles(dut.clock, 80)
     dut.RSTB <= 1
 
-    dut._log.info("Waiting for active");
+    dut._log.info("Waiting for active (This can take a while)");
     # wait for the project to become active
     # wrapper.v has  .active     (la_data_in[32+0])
     # wrapper.c: reg_la1_ena = 0;
@@ -48,7 +48,7 @@ async def test_wb(dut, i):
         if (ack == 1):
             ack_str = "ACK";
 
-        dut._log.info("%s %s %s DATA_IN=%s DATA_OUT=%s" % (dut.clock, hex(addr), ack_str,  hex(data_i), hex(data)));
+        dut._log.info("%4d %s %s DATA_IN=%s DATA_OUT=%s" % (i, hex(addr), ack_str,  hex(data_i), hex(data)));
 
         if (ack == 0):
             return;
