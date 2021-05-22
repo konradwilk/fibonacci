@@ -168,6 +168,7 @@ module wb_logic #(
 
     assign clock_sel = reset ? {CLOCK_WIDTH{1'b0}} : clock_op;
 
-    assign irq = tickle_irq;
+    assign irq = reset ? 1'bz : tickle_irq ? tickle_irq : 3'bzzz;
+
 endmodule
 

@@ -38,6 +38,7 @@ async def test_id(dut, wbs):
         assert (val == exp);
 
 async def test_irq(dut, wbs):
+
     dut.irq <= 0;
     await ClockCycles(dut.wb_clk_i, 5)
     assert dut.irq == 0
@@ -50,9 +51,8 @@ async def test_irq(dut, wbs):
 
     val = await write_val(dut, wbs, CTRL_SET_IRQ, 0);
     #assert(val == 1);
-
-    await ClockCycles(dut.wb_clk_i, 5)
-    assert (dut.irq == 0)
+    dut._log.info("%s" % (dut.irq.value));
+    assert(str(dut.irq.value) == 'zzz');
 
 async def test_read_write(dut, wbs):
 
