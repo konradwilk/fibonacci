@@ -93,7 +93,7 @@ module wb_logic #(
 				    CTRL_GET_ID:
 					    buffer_o <= CTRL_ID;
 				    CTRL_FIBONACCI_CLOCK:
-					    buffer_o <= {29'b0, clock_op};
+					    buffer_o <= {26'b0, clock_op};
 				    CTRL_FIBONACCI_CTRL:
 					    buffer_o <= {31'b0, fibonacci_switch};
 				    CTRL_FIBONACCI_VAL:
@@ -138,7 +138,6 @@ module wb_logic #(
 				     default:
 					     buffer_o <= NACK;
 			     endcase
-			     //transmit <= 1'b1;
 		     end
 	     end
      end
@@ -162,7 +161,7 @@ module wb_logic #(
 
     assign clock_sel = reset ? {CLOCK_WIDTH{1'b0}} : clock_op;
 
-    assign irq = reset ? 1'bz : tickle_irq ? tickle_irq : 3'bzzz;
+    assign irq = reset ? 3'bzzz : (|tickle_irq ? tickle_irq : 3'bzzz);
 
 endmodule
 
