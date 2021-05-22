@@ -19,7 +19,6 @@ async def test_wrapper(dut):
     # We get these annoying 'ZZ' in there, so we do this dance to get rid of it.
     value = BinaryValue(str(dut.io_out.value).replace('z',''));
 
-    print("%s" % (value))
     assert(str(value) == "");
 
     await ClockCycles(dut.wb_clk_i, 100)
@@ -33,7 +32,6 @@ async def test_wrapper(dut):
     await ClockCycles(dut.wb_clk_i,1) 
 
     value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
-    print("%s" % (value));
     #assert (int(value) == 0);
 
     prio_value = 0;
