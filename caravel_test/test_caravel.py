@@ -14,7 +14,7 @@ async def test_start(dut):
     dut.power3 <= 0;
     dut.power4 <= 0;
 
-    print("Cycling power");
+    dut._log.info("Cycling power");
     await ClockCycles(dut.clock, 8)
     dut.power1 <= 1;
     await ClockCycles(dut.clock, 8)
@@ -27,13 +27,13 @@ async def test_start(dut):
     await ClockCycles(dut.clock, 80)
     dut.RSTB <= 1
 
-    print(" - Waiting for active");
+    dut._log.info("Waiting for active");
     # wait for the project to become active
     # wrapper.v has  .active     (la_data_in[32+0])
     # wrapper.c: reg_la1_ena = 0;
     #            reg_la1_data = 1; /* 0x2500,0004 */
     await RisingEdge(dut.uut.mprj.wrapper_fibonacci.active)
-    print(" - Active ON");
+    dut._log.info("Active ON");
 
 async def test_wb(dut, i):
 
@@ -72,7 +72,7 @@ async def test_values(dut):
     cocotb.fork(clock.start())
 
     # wait for the reset (
-    print(" - Waiting for reset");
+    dut._log.info("Waiting for reset");
 
     #         /* .reset(la_data_in[0]) */
     # reg_la0_ena = 0; /* 0x2500,0010 */
@@ -80,13 +80,13 @@ async def test_values(dut):
 
     await RisingEdge(dut.uut.mprj.wrapper_fibonacci.Fibonacci.reset)
     await FallingEdge(dut.uut.mprj.wrapper_fibonacci.Fibonacci.reset)
-    print(" - Reset done");
+    dut._log.info("Reset done");
 
     await ClockCycles(dut.clock,1)
 
     value = str(dut.mprj_io.value).replace('z','');
 
-    print("dut.mprj_io=%d" % (int(value)));
+    dut._log.info("dut.mprj_io=%d" % (int(value)));
     assert (int(value) == 0);
 
     prio_value = 0;
