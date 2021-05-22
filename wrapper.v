@@ -25,7 +25,7 @@ module wrapper_fibonacci  (
     input wire wbs_we_i,
     input wire [3:0] wbs_sel_i,
     input wire [31:0] wbs_dat_i,
-    input wire [32:0] wbs_adr_i,
+    input wire [31:0] wbs_adr_i,
     output wire wbs_ack_o,
     output wire [31:0] wbs_dat_o,
 
