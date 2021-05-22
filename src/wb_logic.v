@@ -8,7 +8,7 @@
 `endif
 
 module wb_logic #(
-    parameter    [32:0] BASE_ADDRESS   = 32'h30000000,
+    parameter    [31:0] BASE_ADDRESS   = 32'h30000000,
     parameter CLOCK_WIDTH = 6
     ) (
     input wire [`MPRJ_IO_PADS-1:0] buf_io_out,
