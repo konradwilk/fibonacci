@@ -88,8 +88,8 @@ void activate(void)
 	 * All data go on la_data_in[127:0] , which starts
 	 * at 0x2500,0000
 	 */
-	reg_la1_iena = 0; /* 0x25000024: Input enable off */
-	reg_la1_oenb = 0; /* 0x25000014: 32th, corresponds to active */
+	reg_la1_iena = 0 << 3; /* 0x25000024: Input enable off */
+	reg_la1_oenb = 0 << 3; /* 0x25000014: 32th, corresponds to active */
 	/* .active() HIGH */
 	reg_la1_data = 1 << 0; /* 0x25000004 */
 }
