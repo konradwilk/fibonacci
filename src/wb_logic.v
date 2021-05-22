@@ -119,31 +119,31 @@ module wb_logic #(
 				    CTRL_SET_IRQ:
 				    begin
 					    tickle_irq <= wbs_dat_i[2:0];
-					    buffer_o <= ACK;
+					    //buffer_o <= ACK;
 				    end
 				    CTRL_FIBONACCI_CTRL:
 					begin
 					    fibonacci_switch <= wbs_dat_i[0];
-					    buffer_o <= ACK;
+					    //buffer_o <= ACK;
 				    end
 				    CTRL_FIBONACCI_CLOCK:
 				    begin
 					    clock_op <= wbs_dat_i[CLOCK_WIDTH-1:0];
-					    buffer_o <= ACK;
+					    //buffer_o <= ACK;
 				    end
 				     CTRL_WRITE:
 				     begin
 					     buffer <= wbs_dat_i;
-					     buffer_o <= ACK;
+					     //buffer_o <= ACK;
 				     end
 				     CTRL_PANIC:
 				     begin
 					     panic <= 1'b1;
 					     buffer <= wbs_dat_i;
-					     buffer_o <= ACK;
+					     //buffer_o <= ACK;
 				     end
-				     default:
-					     buffer_o <= NACK;
+				     //default:
+					     //buffer_o <= NACK;
 			     endcase
 			     //transmit <= 1'b1;
 		     end
