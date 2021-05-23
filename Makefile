@@ -11,8 +11,31 @@ export COCOTB_REDUCED_LOG_FMT=1
 
 all: test_fibonacci test_wb_logic prove_fibonacci test_wrapper test_gds
 
-test_gds:
+test_gds: gds/wrapper_fibonacci.lvs.powered.v
 	$(MAKE) -C gds
+
+.PHONY: gds
+gds:
+	docker run -it \
+		-v $(CURDIR):/work \
+		-v $(OPENLANE_ROOT):/openLANE_flow \
+		-v $(PDK_ROOT):$(PDK_ROOT) \
+		-v $(PDK_PATH):$(PDK_PATH) \
+		-v $(CURDIR):/out \
+		-e PDK_ROOT=$(PDK_ROOT) \
+		-e PDK_PATH=$(PDK_PATH) \
+		-u $(shell id -u $$USER):$(shell id -g $$USER) \
+		efabless/openlane:v0.15 \
+		/bin/bash -c "./flow.tcl -overwrite -design /work/ -run_path /out/ -tag done"
+	cp -f done/results/lvs/wrapper_fibonacci.lvs.powered.v gds/
+	cp -f done/results/magic/wrapper_fibonacci.gds gds/
+	cp -f done/results/magic/wrapper_fibonacci.gds.png gds/
+	cp -f done/results/magic/.magicrc gds/
+	cp -f done/results/magic/wrapper_fibonacci.lef gds/
+
+gds_modify: done/results/lvs/wrapper_fibonacci.lvs.powered.v
+	awk '1;/wbs_sel_i);/{ print "`ifdef COCOTB_SIM"; print "initial begin"; print "$$dumpfile (\"wrapper.vcd\");"; print "$$dumpvars (0, wrapper_fibonacci);"; print "#1;"; print "end"; print "`endif"}' done/results/lvs/wrapper_fibonacci.lvs.powered.v > gds/v
+	cat gds/header gds/v > gds/wrapper_fibonacci.lvs.powered.v
 
 test_lvs_wrapper:
 	rm -rf sim_build/
