@@ -78,29 +78,34 @@ module wrapper_fibonacci  (
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
 
     wire reset = la_data_in[0];
-    wire [5:0] clock_op;
+    reg [5:0] clock_op;
 
     wire fibonacci_clock;
     wire fibonacci_switch;
-    wire [5:0] clocks;
+    reg [5:0] clocks;
 
     clkdiv #(.WIDTH(8)) Clock_1 (
+	    .reset(reset),
 	    .clk(wb_clk_i),
 	    .clkout(clocks[1]));
 
     clkdiv #(.WIDTH(16)) Clock_2 (
+	    .reset(reset),
 	    .clk(wb_clk_i),
 	    .clkout(clocks[2]));
 
     clkdiv #(.WIDTH(24)) Clock_3 (
+	    .reset(reset),
 	    .clk(wb_clk_i),
 	    .clkout(clocks[3]));
 
     clkdiv #(.WIDTH(32)) Clock_4 (
+	    .reset(reset),
 	    .clk(wb_clk_i),
 	    .clkout(clocks[4]));
 
     clkdiv #(.WIDTH(36)) Clock_5 (
+	    .reset(reset),
 	    .clk(wb_clk_i),
 	    .clkout(clocks[5]));
 
