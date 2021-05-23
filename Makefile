@@ -5,6 +5,7 @@ ICEBREAKER_DEVICE = up5k
 ICEBREAKER_PIN_DEF = fpga/icebreaker.pcf
 ICEBREAKER_PACKAGE = sg48
 SEED = 1
+MULTI_PROJECT_DIR ?= $(PWD)/../multi_project_tools
 
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
@@ -42,6 +43,10 @@ test_lvs_wrapper:
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -I $(PDK_ROOT)/sky130A/ -s wrapper_fibonacci -s dump -g2012 gds/wrapper_fibonacci.lvs.powered.v  test/dump_wrapper.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+
+multi_project:
+	cd $(MULTI_PROJECT_DIR); \
+		./multi_tool.py --config projects.yaml --test-tristate --force-delete
 
 test_fibonacci:
 	rm -rf sim_build/
