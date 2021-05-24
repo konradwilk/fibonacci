@@ -112,7 +112,6 @@ module wrapper_fibonacci  (
     wb_logic WishBone (
 	    .buf_io_out(buf_io_out),
 	    .reset(reset),
-	    .irq_out(buf_irq),
 	    .clock_op(clock_op),
 	    .switch_out(fibonacci_switch),
     	    .wb_clk_i(wb_clk_i),
