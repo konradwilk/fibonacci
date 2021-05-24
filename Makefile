@@ -10,7 +10,7 @@ MULTI_PROJECT_DIR ?= $(PWD)/../multi_project_tools
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
 
-all: test_fibonacci test_wb_logic prove_fibonacci test_wrapper test_gds
+all: multi_project
 
 test_gds: gds/wrapper_fibonacci.lvs.powered.v
 	$(MAKE) -C gds
@@ -44,6 +44,7 @@ done/results/lvs/wrapper_fibonacci.lvs.powered.v:
 	$(MAKE) test_fibonacci
 	$(MAKE) test_wb_logic
 	$(MAKE) test_wrapper
+	$(MAKE) prove_fibonacci
 	$(MAKE) run_gds
 
 test_lvs_wrapper:
@@ -52,9 +53,14 @@ test_lvs_wrapper:
 	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -I $(PDK_ROOT)/sky130A/ -s wrapper_fibonacci -s dump -g2012 gds/wrapper_fibonacci.lvs.powered.v  test/dump_wrapper.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
+generated.yaml:
+	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" > $(CURDIR)/generated.yaml
+
 multi_project: gds
+	$(MAKE) clean
+	$(MAKE) generated.yaml
 	cd $(MULTI_PROJECT_DIR); \
-		./multi_tool.py --config projects.yaml --test-all --force-delete
+		./multi_tool.py --config $(CURDIR)/generated.yaml --test-all --force-delete
 
 test_fibonacci:
 	rm -rf sim_build/
@@ -86,7 +92,7 @@ lint:
 
 .PHONY: clean
 clean:
-	rm -rf *vcd sim_build fpga/*log fpga/*bin test/__pycache__ done caravel_test/sim_build properties *.xml
+	rm -rf *vcd sim_build fpga/*log fpga/*bin test/__pycache__ done caravel_test/sim_build properties *.xml generated.yaml
 
 # FPGA recipes
 
