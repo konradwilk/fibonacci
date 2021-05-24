@@ -121,7 +121,7 @@ async def test_clock_op(dut, wbs):
     val = await read_val(dut, wbs, CTRL_FIBONACCI_CLOCK, exp);
     assert (val == exp)
 
-    assert(dut.clock_sel_out == 1<<1);
+    assert(dut.clock_op == 1<<1);
 
 async def test_panic(dut, wbs):
 

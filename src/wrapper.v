@@ -78,11 +78,11 @@ module wrapper_fibonacci  (
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
 
     wire reset = la_data_in[0];
-    reg [5:0] clock_op;
+    wire [5:0] clock_op;
 
     wire fibonacci_clock;
     wire fibonacci_switch;
-    reg [5:0] clocks;
+    wire [5:0] clocks;
 
     clkdiv #(.WIDTH(8)) Clock_1 (
 	    .reset(reset),
@@ -113,7 +113,7 @@ module wrapper_fibonacci  (
 	    .buf_io_out(buf_io_out),
 	    .reset(reset),
 	    .irq_out(buf_irq),
-	    .clock_sel_out(clock_op),
+	    .clock_op(clock_op),
 	    .switch_out(fibonacci_switch),
     	    .wb_clk_i(wb_clk_i),
     	    .wb_rst_i(wb_rst_i),
