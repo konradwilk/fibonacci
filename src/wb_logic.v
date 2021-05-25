@@ -60,24 +60,15 @@ module wb_logic #(
 
     always @(posedge wb_clk_i) begin
 	    if (reset) begin
-		    transmit <= 1'b0;
-	    end else begin
-		    if (transmit)
-			    transmit <= 1'b0;
-		    /* The read or write will match this */
-		    if (wb_active && wbs_adr_i >= BASE_ADDRESS)
-			    transmit <= 1'b1;
-	    end
-    end
-
-    always @(posedge wb_clk_i) begin
-	    if (reset) begin
 		    buffer_o <= DEFAULT;
 		    buffer <= DEFAULT;
 		    panic <= 1'b0;
 		    fibonacci_switch <= 1'b1;
 		    clock_op <= 6'b000001; /* TODO: Move this out? */
+		    transmit <= 1'b0;
 	    end else begin
+		    if (transmit)
+			    transmit <= 1'b0;
 
 		    /* Read case */
 		    if (wb_active && !wbs_we_i) begin
@@ -101,6 +92,7 @@ module wb_logic #(
 			             default:
 					    buffer_o <= NACK;
 				endcase
+                transmit <= 1'b1;
 		    end
 		    /* Write case */
 		    if (wb_active && wbs_we_i && &wbs_sel_i) begin
@@ -133,6 +125,7 @@ module wb_logic #(
 				     default:
 					     buffer_o <= NACK;
 			     endcase
+                 transmit <= 1'b1;
 		     end
 	     end
      end
@@ -147,8 +140,7 @@ module wb_logic #(
 	     end
     end*/
 
-     assign wbs_ack_o = reset ? 1'b0 : (wb_active && transmit &&
-					   (wbs_adr_i >= BASE_ADDRESS));
+     assign wbs_ack_o = reset ? 1'b0 : transmit;
 
     assign wbs_dat_o = reset ? 32'b0 : buffer_o;
 
