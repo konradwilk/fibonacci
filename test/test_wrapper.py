@@ -14,9 +14,17 @@ async def test_wrapper(dut):
         dut.vccd1 <= 1
     except:
         pass
-
+    dut.wbs_dat_i <= 0
+    dut.wbs_dat_o <= 0
+    dut.wbs_sel_i <= 0
+    dut.wbs_adr_i <= 0
+    dut.wbs_we_i <= 0;
+    dut.wbs_ack_o <= 0;
+    dut.wb_rst_i <= 0
     dut.wbs_stb_i <= 0
     dut.wbs_cyc_i <= 0
+    await ClockCycles(dut.wb_clk_i, 5)
+
     dut.active <= 0
     dut.wb_rst_i <= 1
     await ClockCycles(dut.wb_clk_i, 5)
