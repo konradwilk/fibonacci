@@ -39,6 +39,7 @@ gds: done/results/lvs/wrapper_fibonacci.lvs.powered.v
 	awk '1;/wbs_sel_i);/{ print "`ifdef COCOTB_SIM"; print "initial begin"; print "$$dumpfile (\"wrapper.vcd\");"; print "$$dumpvars (0, wrapper_fibonacci);"; print "#1;"; print "end"; print "`endif"}' done/results/lvs/wrapper_fibonacci.lvs.powered.v > gds/v
 	cat gds/header gds/v > gds/wrapper_fibonacci.lvs.powered.v
 	$(MAKE) test_gds
+	$(MAKE) test_lvs_wrapper
 
 done/results/lvs/wrapper_fibonacci.lvs.powered.v:
 	$(MAKE) test_fibonacci
