@@ -15,6 +15,8 @@ async def test_wrapper(dut):
     except:
         pass
 
+    dut.wbs_stb_i <= 0
+    dut.wbs_cyc_i <= 0
     dut.active <= 0
     dut.wb_rst_i <= 1
     await ClockCycles(dut.wb_clk_i, 5)
@@ -32,7 +34,7 @@ async def test_wrapper(dut):
     dut.active <= 1
     # Reset pin is hooked up to la_data_in[0].
     dut.la_data_in <= 1 << 0
-    await ClockCycles(dut.wb_clk_i,1) 
+    await ClockCycles(dut.wb_clk_i,2) 
     
     dut.la_data_in <= 0 << 0
     await ClockCycles(dut.wb_clk_i,1) 
