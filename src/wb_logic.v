@@ -14,7 +14,6 @@ module wb_logic #(
     input wire [`MPRJ_IO_PADS-1:0] buf_io_out,
     output reg [CLOCK_WIDTH-1:0] clock_op,
     input wire reset,
-    output wire [2:0] irq_out,
 
     output wire switch_out,
     /* WishBone logic */
