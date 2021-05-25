@@ -129,16 +129,6 @@ module wb_logic #(
 		     end
 	     end
      end
-     /*
-     always @(posedge wb_clk_i) begin
-	     if (reset) begin
-		     wbs_ack_o <= 1'b0;
-		     wbs_dat_o <= 32'b0;
-	     end else begin
-		     wbs_ack_o <= wb_active;
-	     	     wbs_dat_o <= wb_active ? buffer_o : 32'b0;
-	     end
-    end*/
 
      assign wbs_ack_o = reset ? 1'b0 : transmit;
 
