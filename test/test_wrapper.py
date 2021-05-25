@@ -23,7 +23,7 @@ async def test_wrapper(dut):
 
     dut._log.info("io_out=%s" % (dut.io_out.value));
     # We get these annoying 'ZZ' in there, so we do this dance to get rid of it.
-    value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
+    value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
 
     assert(str(value) == "");
 
@@ -38,7 +38,7 @@ async def test_wrapper(dut):
     await ClockCycles(dut.wb_clk_i,1) 
 
     dut._log.info("io_out=%s" % (dut.io_out.value));
-    value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
+    value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
     #assert (int(value) == 0);
 
     prio_value = 0;
@@ -49,7 +49,7 @@ async def test_wrapper(dut):
         # assert still low
         assert dut.la_data_in == 0
 
-        value = BinaryValue(str(dut.io_out.value).replace('z','').replace('x',''));
+        value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
         dut._log.info("%2d: io_out = %s" % (i, dut.io_out.value));
         current_value  = int(value);
 

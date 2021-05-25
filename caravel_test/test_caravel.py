@@ -82,7 +82,7 @@ async def test_values(dut):
 
     await ClockCycles(dut.clock,1)
 
-    value = str(dut.mprj_io.value).replace('z','');
+    value = str(dut.mprj_io.value)[:-8].replace('z','');
 
     dut._log.info("dut.mprj_io=%d" % (int(value)));
     assert (int(value) == 0);
@@ -92,7 +92,7 @@ async def test_values(dut):
 
     for i in range(50):
         # We get these annoying 'ZZ' in there, so we do this dance to get rid of it.
-        value = BinaryValue(str(dut.mprj_io.value).replace('z',''));
+        value = BinaryValue(str(dut.mprj_io.value)[:-8].replace('z',''));
 
         current_value  = int(value);
 
