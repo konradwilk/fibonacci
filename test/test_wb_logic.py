@@ -249,7 +249,7 @@ async def test_wb_logic(dut):
 
     await test_id(dut, wbs);
 
-    #await test_irq(dut, wbs, wrapper);
+    await test_irq(dut, wbs, wrapper);
 
     await test_read_write(dut, wbs);
 
