@@ -1,4 +1,5 @@
 import cocotb
+import inspect
 from cocotb.clock import Clock
 from cocotb.binary import BinaryValue
 from cocotb.triggers import ClockCycles
@@ -11,7 +12,7 @@ async def read_val(dut, wbs, cmd, exp):
     return wbRes[0].datrd.integer
 
 async def write_val(dut, wbs, cmd, val):
-    dut._log.info("%s <= Writting %s" % (hex(cmd), hex(val)));
+    dut._log.info("%s <= Writing %s" % (hex(cmd), hex(val)));
     wbRes = await wbs.send_cycle([WBOp(cmd, dat=val)]);
     val = wbRes[0].datrd.integer
     dut._log.info("%s <= (ret=%s)" % (hex(cmd),  hex(val)));
@@ -75,12 +76,13 @@ async def test_read_write(dut, wbs):
         val = await read_val(dut, wbs, cmd, exp);
         assert (val == exp);
 
-async def test_ctrl(dut, wbs, wrapper):
+async def test_ctrl(dut, wbs, wrapper, gl):
 
-    if wrapper:
-        name = dut.fibonacci_switch
-    else:
-        name = dut.fibonacci_switch
+    if gl:
+        dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
+        return
+
+    name = dut.fibonacci_switch
 
     assert (name == 1);
     exp = 1;
@@ -114,6 +116,13 @@ async def test_values(dut, wbs, wrapper):
     else:
         exp = 0xF;
 
+    # It resets to zero when MSB is high, so in that case add an extra cycle.
+    if (val > exp) and wrapper:
+        await ClockCycles(dut.wb_clk_i, 5)
+        val = await read_val(dut, wbs, CTRL_FIBONACCI_VAL, exp);
+        exp = int(BinaryValue(str(dut.io_out.value)[:-8]));
+
+    dut._log.info("val %s <= exp %s" % (hex(val), hex(exp)));
     assert (val <= exp);
 
     exp = 0;
@@ -121,7 +130,11 @@ async def test_values(dut, wbs, wrapper):
     val = await write_val(dut, wbs, CTRL_FIBONACCI_VAL, exp);
     assert (val == exp)
 
-async def test_clock_op(dut, wbs):
+async def test_clock_op(dut, wbs, wrapper, gl):
+
+    if gl:
+        dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
+        return
 
     # Default clock is on 0th bit.
     assert (dut.clock_op == 0x1);
@@ -145,8 +158,11 @@ async def test_clock_op(dut, wbs):
 
     assert(dut.clock_op == 1<<1);
 
-async def test_panic(dut, wbs, wrapper):
+async def test_panic(dut, wbs, wrapper, gl):
 
+    if gl:
+        dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
+        return
     if wrapper:
         name = dut.WishBone.panic;
     else:
@@ -166,11 +182,6 @@ async def test_panic(dut, wbs, wrapper):
     assert (val == 1);
 
 async def activate_wrapper(dut):
-    try:
-        dut.vssd1 <= 0
-        dut.vccd1 <= 1
-    except:
-        pass
 
     await ClockCycles(dut.wb_clk_i, 5)
 
@@ -211,7 +222,13 @@ async def test_wb_logic(dut):
                                       "datrd":"dat_o",
                                       "ack":  "ack_o",
                                       "sel": "sel_i"})
-
+    gl = False
+    try:
+        dut.vssd1 <= 0
+        dut.vccd1 <= 1
+        gl = True
+    except:
+        pass
     # This exists in WishBone code only.
     try:
         dut.reset <= 1
@@ -236,11 +253,10 @@ async def test_wb_logic(dut):
 
     await test_read_write(dut, wbs);
 
-    await test_ctrl(dut, wbs, wrapper);
+    await test_ctrl(dut, wbs, wrapper, gl);
 
     await test_values(dut, wbs, wrapper);
 
-    await test_clock_op(dut, wbs);
+    await test_clock_op(dut, wbs, wrapper, gl);
 
-    await test_panic(dut, wbs, wrapper);
-
+    await test_panic(dut, wbs, wrapper, gl);
