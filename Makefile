@@ -48,6 +48,11 @@ done/results/lvs/wrapper_fibonacci.lvs.powered.v:
 	$(MAKE) prove_fibonacci
 	$(MAKE) run_gds
 
+covered:
+	$(MAKE) test_wrapper
+	covered score -t wrapper_fibonacci -I src/ -v src/wrapper.v -v src/clkdiv.v -v src/wb_logic.v -v src/fibonacci.v -vcd wrapper.vcd -D MPRJ_IO_PADS=38 -i wrapper_fibonacci -o final.cdd
+	covered report -d v final.cdd
+
 test_lvs_wrapper:
 	rm -rf sim_build/
 	mkdir sim_build/
@@ -93,7 +98,7 @@ lint:
 
 .PHONY: clean
 clean:
-	rm -rf *vcd sim_build fpga/*log fpga/*bin test/__pycache__ done caravel_test/sim_build properties *.xml generated.yaml
+	rm -rf *vcd sim_build fpga/*log fpga/*bin test/__pycache__ done caravel_test/sim_build properties *.xml generated.yaml *.cdd
 
 # FPGA recipes
 
