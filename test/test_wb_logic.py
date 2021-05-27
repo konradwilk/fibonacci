@@ -34,8 +34,11 @@ async def test_id(dut, wbs):
         exp = 0x4669626f;
         val = await read_val(dut, wbs, cmd, exp);
         assert (val == exp);
-        cmd = CTRL_GET_NR
-        exp = 9;
+        cmd = CTRL_GET_NR;
+        # First version has only 9 commands
+        if (exp == 0x4669626f):
+            exp = 9;
+
         val = await read_val(dut, wbs, cmd, exp);
         assert (val == exp);
 
@@ -181,6 +184,30 @@ async def test_panic(dut, wbs, wrapper, gl):
     val = await read_val(dut, wbs, CTRL_PANIC, 1);
     assert (val == 1);
 
+async def test_unknown(dut, wbs):
+
+    cmd = CTRL_GET_ID;
+    exp = 0x4669626f;
+    val = await read_val(dut, wbs, cmd, exp);
+
+    # First version
+    if (exp == 0x4669626f):
+        exp = 9
+
+    nr = CTRL_GET_NR
+    val = await read_val(dut, wbs, nr, exp);
+
+    cmd = CTRL_GET_NR + (val * 4);
+    exp = 0;
+
+    # Should fail.
+    val = await write_val(dut, wbs, cmd, exp);
+    assert (val == 0);
+
+    # Should fail.
+    val = await read_val(dut, wbs, cmd, exp);
+    assert (val == 0);
+
 async def activate_wrapper(dut):
 
     await ClockCycles(dut.wb_clk_i, 5)
@@ -260,3 +287,5 @@ async def test_wb_logic(dut):
     await test_clock_op(dut, wbs, wrapper, gl);
 
     await test_panic(dut, wbs, wrapper, gl);
+
+    await test_unknown(dut, wbs);
