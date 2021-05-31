@@ -16,7 +16,7 @@ catch {random seed}
 
 # Allow override of PDK path from environment variable PDKPATH
 if {[catch {set PDKPATH $env(PDKPATH)}]} {
-    set PDKPATH "/home/zerotoasic/asic_tools/pdk/sky130A"
+    set PDKPATH "/home/konrad/pdk/sky130A"
 }
 
 # loading technology

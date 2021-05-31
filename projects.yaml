@@ -2,9 +2,9 @@ projects:
         - #HOME/fibonacci/
 
 caravel:
-    root:           #HOME/asic_tools/caravel_user_project
-    test_dir:       #HOME/asic_tools/caravel_user_project/verilog/dv
-    rtl_dir:        #HOME/asic_tools/caravel_user_project/verilog/rtl/
+    root:           #HOME/caravel_user_project
+    test_dir:       #HOME/caravel_user_project/verilog/dv
+    rtl_dir:        #HOME/caravel_user_project/verilog/rtl/
     config:         config.tcl
 
 wrapper:
@@ -15,13 +15,13 @@ wrapper:
     includes_template:  uprj_netlists.sub.v
 
 env: # used for simulation
-    GCC_PATH:       /opt/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14/bin/
-    GCC_PREFIX:     riscv64-unknown-elf
-    PDK_PATH:       #HOME/asic_tools/pdk/sky130A
+    GCC_PATH:       #GCC_PATH
+    GCC_PREFIX:     #GCC_PREFIX
+    PDK_PATH:       #HOME/pdk/sky130A
 
 lvs:
-    PDK_PATH:       #HOME/asic_tools/pdk/sky130A # can't get LVS to work on rc6 PDK: always fails on tap cells
-    OPENLANE:       #HOME/asic_tools/openlane    # only used to find the count_lvs.py script
+    PDK_PATH:       #HOME/pdk/sky130A # can't get LVS to work on rc6 PDK: always fails on tap cells
+    OPENLANE:       #HOME/openlane    # only used to find the count_lvs.py script
 
 tests:
     gds:

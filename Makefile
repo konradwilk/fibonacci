@@ -6,6 +6,8 @@ ICEBREAKER_PIN_DEF = fpga/icebreaker.pcf
 ICEBREAKER_PACKAGE = sg48
 SEED = 1
 MULTI_PROJECT_DIR ?= $(PWD)/../multi_project_tools
+GCC_PATH ?= /opt/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-centos6/bin
+GCC_PREFIX ?= riscv64-unknown-elf
 
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
@@ -60,7 +62,7 @@ test_lvs_wrapper:
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper,test.test_wb_logic vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 generated.yaml:
-	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" > $(CURDIR)/generated.yaml
+	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" | sed "s|#GCC_PATH|$(GCC_PATH)|" | sed s"|#GCC_PREFIX|$(GCC_PREFIX)|" > $(CURDIR)/generated.yaml
 
 multi_project: gds
 	$(MAKE) clean
