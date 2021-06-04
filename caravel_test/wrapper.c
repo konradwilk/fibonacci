@@ -76,6 +76,9 @@ void configure_gpio(void)
         reg_mprj_io_10 = GPIO_MODE_USER_STD_OUTPUT;
         reg_mprj_io_9 = GPIO_MODE_USER_STD_OUTPUT;
         reg_mprj_io_8 = GPIO_MODE_USER_STD_OUTPUT;
+
+	/* Enable user IRQs */
+	reg_mprj_irq = 3;
 }
 
 void activate(void)

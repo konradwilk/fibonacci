@@ -14,6 +14,7 @@ module wb_logic #(
     input wire [`MPRJ_IO_PADS-1:0] buf_io_out,
     output reg [CLOCK_WIDTH-1:0] clock_op,
     input wire reset,
+    output wire [2:0] irq_out,
 
     output wire switch_out,
     /* WishBone logic */
@@ -36,6 +37,7 @@ module wb_logic #(
     reg [31:0] buffer_o;
     reg fibonacci_switch;
     reg transmit;
+    reg [2:0] tickle_irq;
     reg panic;
 
     /* CTRL_GET parameters. */
@@ -62,6 +64,7 @@ module wb_logic #(
 	    if (reset) begin
 		    buffer_o <= DEFAULT;
 		    buffer <= DEFAULT;
+		    tickle_irq <= 3'b0;
 		    panic <= 1'b0;
 		    fibonacci_switch <= 1'b1;
 		    clock_op <= 6'b000001; /* TODO: Move this out? */
@@ -99,6 +102,7 @@ module wb_logic #(
 			     case (wbs_adr_i)
 				    CTRL_SET_IRQ:
 				    begin
+					    tickle_irq <= wbs_dat_i[2:0];
 					    buffer_o <= ACK;
 				    end
 				    CTRL_FIBONACCI_CTRL:
@@ -135,6 +139,8 @@ module wb_logic #(
     assign wbs_dat_o = reset ? 32'b0 : buffer_o;
 
     assign switch_out = reset ? 1'b0 : fibonacci_switch;
+
+    assign irq_out = reset ? 3'bzzz : (|tickle_irq ? tickle_irq : 3'bzzz);
 
 endmodule
 `default_nettype wire
