@@ -14,6 +14,7 @@ async def test_start(dut):
     dut.power2 <= 0;
     dut.power3 <= 0;
     dut.power4 <= 0;
+    dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value <= 0;
 
     dut._log.info("Cycling power");
     await ClockCycles(dut.clock, 8)
@@ -42,7 +43,11 @@ async def test_wb(dut, i):
     addr = int(dut.uut.mprj.wrapper_fibonacci.wbs_adr_i.value);
     data = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_o.value);
     ack = int(dut.uut.mprj.wrapper_fibonacci.wbs_ack_o.value);
-    data_i = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value);
+    try:
+        data_i = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value);
+    except:
+        dut._log.info("%4d %s %s DATA_IN=RAW[%s] DATA_OUT=%s" % (i, hex(addr), ack_str,  dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value, hex(data)));
+        pass
 
     if (addr >= 0x30000000):
         if (ack == 1):
