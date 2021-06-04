@@ -116,7 +116,7 @@ async def test_values(dut):
 
         await ClockCycles(dut.clock,1)
 
-    for i in range(30000):
+    for i in range(300000):
 
         await ClockCycles(dut.clock,1)
         await test_wb(dut, i);

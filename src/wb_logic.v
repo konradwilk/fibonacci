@@ -140,7 +140,7 @@ module wb_logic #(
 
     assign switch_out = reset ? 1'b0 : fibonacci_switch;
 
-    assign irq_out = reset ? 3'bzzz : (|tickle_irq ? tickle_irq : 3'bzzz);
+    assign irq_out = reset ? 3'b000 : (|tickle_irq ? tickle_irq : 3'b000);
 
 endmodule
 `default_nettype wire

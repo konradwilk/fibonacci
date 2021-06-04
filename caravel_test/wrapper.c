@@ -125,7 +125,11 @@ volatile bool flag;
 // gets jumped to from the interrupt handler defined in start.S
 uint32_t *irq()
 {
-    flag = 0;
+	flag = 0;
+
+	write(CTRL_SET_IRQ, 0); /* Ack the IRQ */
+
+	write(CTRL_PANIC, MAGIC_END);
 }
 
 void wishbone_test(void)
@@ -154,6 +158,8 @@ void wishbone_test(void)
 
 	val = 1 << 1;
 	write(CTRL_FIBONACCI_CLOCK, val);
+
+	val = 1 << 0;
 	write(CTRL_SET_IRQ, val);
 
 	do {

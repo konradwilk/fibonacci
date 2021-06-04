@@ -65,7 +65,7 @@ async def test_irq(dut, wbs, wrapper):
     await ClockCycles(dut.wb_clk_i, 5)
     dut._log.info("IRQ=%s" % (name.value));
 
-    assert(str(name.value) == 'zzz' or str(name.value) == 'xxx');
+    assert(name.value == 0);
 
 async def test_read_write(dut, wbs):
 
