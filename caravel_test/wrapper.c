@@ -120,6 +120,14 @@ void panic(uint32_t line)
 #define MAGIC_VAL 0xdeadbeef
 #define MAGIC_END 0x0badf00d
 
+volatile bool flag;
+
+// gets jumped to from the interrupt handler defined in start.S
+uint32_t *irq()
+{
+    flag = 0;
+}
+
 void wishbone_test(void)
 {
 	uint32_t val;
@@ -148,10 +156,17 @@ void wishbone_test(void)
 	write(CTRL_FIBONACCI_CLOCK, val);
 	write(CTRL_SET_IRQ, val);
 
+	do {
+		// Spin until IRQ comes
+	} while (flag);
+
 	write(CTRL_PANIC, MAGIC_END);
 }
+
 void main()
 {
+	flag = 1;
+
 	// All GPIO pins are configured to be output
 	configure_gpio();
 
@@ -165,5 +180,6 @@ void main()
 
 	wishbone_test();
 	/* There it goes .. */
+
 }
 
