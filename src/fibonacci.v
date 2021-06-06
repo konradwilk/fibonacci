@@ -2,12 +2,12 @@
 `timescale 1ns/1ns
 
 module fibonacci #(parameter WIDTH=32)
-    (
-        input wire clk,
-        input wire reset,
-        input wire on,
-        output wire [WIDTH-1:0] value
-    );
+   (
+    input wire clk,
+    input wire reset,
+    input wire on,
+    output wire [WIDTH-1:0] value
+);
 
     reg [WIDTH-1:0] current;
     reg [WIDTH-1:0] previous;
