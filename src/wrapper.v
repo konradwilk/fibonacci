@@ -83,6 +83,7 @@ module wrapper_fibonacci  (
     wire fibonacci_clock;
     wire fibonacci_switch;
     wire [5:0] clocks;
+    wire done;
 
     clkdiv #(.WIDTH(8)) Clock_1 (
 	    .reset(reset),
@@ -140,6 +141,21 @@ module wrapper_fibonacci  (
             .reset(reset),
 	    .on(fibonacci_switch),
             .value(buf_io_out[37:8]));
+
+    sha1_wb sha1_wishbone (
+            .reset(reset),
+            .done(done),
+            .irq(buf_irq[0]),
+            .wb_clk_i(wb_clk_i),
+            .wb_rst_i(wb_rst_i),
+            .wbs_stb_i(wbs_stb_i),
+            .wbs_cyc_i(wbs_cyc_i),
+            .wbs_we_i(wbs_we_i),
+            .wbs_sel_i(wbs_sel_i),
+            .wbs_dat_i(wbs_dat_i),
+            .wbs_adr_i(wbs_adr_i),
+            .wbs_ack_o(buf_wbs_ack_o),
+            .wbs_dat_o(buf_wbs_dat_o));
 
 endmodule
 `default_nettype wire

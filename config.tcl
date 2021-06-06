@@ -7,7 +7,9 @@ set ::env(DESIGN_NAME) wrapper_fibonacci
 set ::env(VERILOG_FILES) "/work/src/wrapper.v \
 	/work/src/fibonacci.v \
 	/work/src/wb_logic.v \
-	/work/src/clkdiv.v"
+	/work/src/clkdiv.v \
+	/work/src/sha1/sha1.v \
+	/work/src/sha1/sha1_wb.v"
 
 # Fill this
 set ::env(CLOCK_PERIOD) "10"

@@ -288,4 +288,3 @@ async def test_wb_logic(dut):
 
     await test_panic(dut, wbs, wrapper, gl);
 
-    await test_unknown(dut, wbs);
