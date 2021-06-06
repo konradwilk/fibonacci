@@ -8,8 +8,8 @@ set ::env(VERILOG_FILES) "/work/src/wrapper.v \
 	/work/src/fibonacci.v \
 	/work/src/wb_logic.v \
 	/work/src/clkdiv.v \
-	/work/src/sha1/sha1.v \
-	/work/src/sha1/sha1_wb.v"
+	/work/sha1/src/sha1.v \
+	/work/sha1/src/sha1_wb.v"
 
 # Fill this
 set ::env(CLOCK_PERIOD) "10"

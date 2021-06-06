@@ -1,4 +1,5 @@
 always @(posedge wb_clk_i) begin
+  if (!sha1_activate) begin
     if(active) begin
         // active properties here
 	_active_io_out_:assert(io_out[16:14] == buf_io_out[16:14]);
@@ -16,4 +17,5 @@ always @(posedge wb_clk_i) begin
 	_io_oeb: assert(io_oeb == 32'b0);
 	_irq_ : assert(irq == 3'b0);
     end
+ end
 end

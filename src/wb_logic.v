@@ -38,7 +38,9 @@ module wb_logic #(
     reg fibonacci_switch;
     reg transmit;
     reg [2:0] tickle_irq;
+    wire sha1_irq;
     reg panic;
+    reg done;
 
     /* CTRL_GET parameters. */
     localparam CTRL_GET_NR		= BASE_ADDRESS;
@@ -72,7 +74,8 @@ module wb_logic #(
 	    end else begin
 		    if (transmit)
 			    transmit <= 1'b0;
-
+                    if (sha1_irq)
+                            tickle_irq[0] <= 1'b1;
 		    /* Read case */
 		    if (wb_active && !wbs_we_i) begin
 			    case (wbs_adr_i)

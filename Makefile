@@ -88,7 +88,7 @@ test_wrapper:
 test_wb_logic:
 	rm -rf sim_build/
 	mkdir sim_build/
-	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38  -s wb_logic -s dump -g2012 src/wb_logic.v test/dump_wb_logic.v
+	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38  -s wb_logic -s dump -g2012 src/wb_logic.v sha1/src/sha1_wb.v sha1/src/sha1.v test/dump_wb_logic.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wb_logic vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 
 show_%: %.vcd %.gtkw
