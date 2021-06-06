@@ -1,10 +1,10 @@
 `default_nettype none
 `timescale 1ns/1ns
 `ifdef FORMAL
-    `define MPRJ_IO_PADS 38
+`define MPRJ_IO_PADS 38
 `endif
 `ifdef VERILATOR
-    `define MPRJ_IO_PADS 38
+`define MPRJ_IO_PADS 38
 `endif
 module wrapper_fibonacci  (
 `ifdef USE_POWER_PINS
@@ -64,7 +64,7 @@ module wrapper_fibonacci  (
     wire [2:0] sha1_buf_irq;
     wire sha1_activate;
 
-    `ifdef FORMAL
+`ifdef FORMAL
     // formal can't deal with z, so set all outputs to 0 if not active
     assign wbs_ack_o    = active ? (sha1_activate ? sha1_buf_wbs_ack_o : (fib_activate ? buf_wbs_ack_o : 1'b0)) : 1'b0;
     assign wbs_dat_o    = active ? (sha1_activate ? sha1_buf_wbs_dat_o : (fib_activate ? buf_wbs_dat_o : 32'b0)) : 32'b0;
@@ -72,8 +72,8 @@ module wrapper_fibonacci  (
     assign io_out       = active ? (sha1_activate ? sha1_buf_io_out : (fib_activate ? buf_io_out: {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'b0}};
     assign io_oeb       = active ? (sha1_activate ? sha1_buf_io_oeb : (fib_activate ? buf_io_oeb: {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'b0}};
     assign irq		= active ? (sha1_activate ? sha1_buf_irq : (fib_activate ? buf_irq : 3'b0)) : 3'b0;
-    `include "properties.v"
-    `else
+`include "properties.v"
+`else
     // tristate buffers
     // if (activate && sha1_activate)
     //    assign with sha1 prefix
@@ -89,7 +89,7 @@ module wrapper_fibonacci  (
     assign io_out       = active ? (sha1_activate ? sha1_buf_io_out : (fib_activate ? buf_io_out : {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'bz}};
     assign io_oeb       = active ? (sha1_activate ? sha1_buf_io_oeb : (fib_activate ? buf_io_oeb : {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'bz}};
     assign irq		= active ? (sha1_activate ? sha1_buf_irq : (fib_activate ? buf_irq : 3'b0)) : 3'bz;
-    `endif
+`endif
 
     // permanently set oeb so that outputs are always enabled: 0 is output, 1 is high-impedance
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
@@ -104,46 +104,46 @@ module wrapper_fibonacci  (
     reg done;
 
     clkdiv #(.WIDTH(8)) Clock_1 (
-	    .reset(reset),
-	    .clk(wb_clk_i),
-	    .clkout(clocks[1]));
+        .reset(reset),
+        .clk(wb_clk_i),
+        .clkout(clocks[1]));
 
     clkdiv #(.WIDTH(16)) Clock_2 (
-	    .reset(reset),
-	    .clk(wb_clk_i),
-	    .clkout(clocks[2]));
+        .reset(reset),
+        .clk(wb_clk_i),
+        .clkout(clocks[2]));
 
     clkdiv #(.WIDTH(24)) Clock_3 (
-	    .reset(reset),
-	    .clk(wb_clk_i),
-	    .clkout(clocks[3]));
+        .reset(reset),
+        .clk(wb_clk_i),
+        .clkout(clocks[3]));
 
     clkdiv #(.WIDTH(32)) Clock_4 (
-	    .reset(reset),
-	    .clk(wb_clk_i),
-	    .clkout(clocks[4]));
+        .reset(reset),
+        .clk(wb_clk_i),
+        .clkout(clocks[4]));
 
     clkdiv #(.WIDTH(36)) Clock_5 (
-	    .reset(reset),
-	    .clk(wb_clk_i),
-	    .clkout(clocks[5]));
+        .reset(reset),
+        .clk(wb_clk_i),
+        .clkout(clocks[5]));
 
     wb_logic WishBone (
-	    .buf_io_out(buf_io_out),
-	    .reset(reset),
-	    .irq_out(buf_irq),
-	    .clock_op(clock_op),
-	    .switch_out(fibonacci_switch),
-    	    .wb_clk_i(wb_clk_i),
-    	    .wb_rst_i(wb_rst_i),
-    	    .wbs_stb_i(wbs_stb_i),
-            .wbs_cyc_i(wbs_cyc_i),
-    	    .wbs_we_i(wbs_we_i),
-    	    .wbs_sel_i(wbs_sel_i),
-    	    .wbs_dat_i(wbs_dat_i),
-    	    .wbs_adr_i(wbs_adr_i),
-    	    .wbs_ack_o(buf_wbs_ack_o),
-    	    .wbs_dat_o(buf_wbs_dat_o));
+        .buf_io_out(buf_io_out),
+        .reset(reset),
+        .irq_out(buf_irq),
+        .clock_op(clock_op),
+        .switch_out(fibonacci_switch),
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_i(wb_rst_i),
+        .wbs_stb_i(wbs_stb_i),
+        .wbs_cyc_i(wbs_cyc_i),
+        .wbs_we_i(wbs_we_i),
+        .wbs_sel_i(wbs_sel_i),
+        .wbs_dat_i(wbs_dat_i),
+        .wbs_adr_i(wbs_adr_i),
+        .wbs_ack_o(buf_wbs_ack_o),
+        .wbs_dat_o(buf_wbs_dat_o));
 
     assign clocks[0] = wb_clk_i;
 
@@ -155,10 +155,10 @@ module wrapper_fibonacci  (
 				    clocks[0]))));
 
     fibonacci #(.WIDTH(30)) Fibonacci(
-            .clk(fibonacci_clock),
-            .reset(reset),
-	    .on(fibonacci_switch),
-            .value(buf_io_out[37:8]));
+        .clk(fibonacci_clock),
+        .reset(reset),
+        .on(fibonacci_switch),
+        .value(buf_io_out[37:8]));
 
    /* Only on when sha1_activate is on */
    sha1_wb sha1_wishbone (
