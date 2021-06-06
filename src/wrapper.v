@@ -161,20 +161,20 @@ module wrapper_fibonacci  (
         .value(buf_io_out[37:8]));
 
    /* Only on when sha1_activate is on */
-   sha1_wb sha1_wishbone (
-            .reset(reset),
-            .done(done),
-            .irq(sha1_buf_irq[0]),
-            .wb_clk_i(wb_clk_i),
-            .wb_rst_i(wb_rst_i),
-            .wbs_stb_i(wbs_stb_i),
-            .wbs_cyc_i(wbs_cyc_i),
-            .wbs_we_i(wbs_we_i),
-            .wbs_sel_i(wbs_sel_i),
-            .wbs_dat_i(wbs_dat_i),
-            .wbs_adr_i(wbs_adr_i),
-            .wbs_ack_o(sha1_buf_wbs_ack_o),
-            .wbs_dat_o(sha1_buf_wbs_dat_o));
+    sha1_wb sha1_wishbone (
+        .reset(reset),
+        .done(done),
+        .irq(sha1_buf_irq[0]),
+        .wb_clk_i(wb_clk_i),
+        .wb_rst_i(wb_rst_i),
+        .wbs_stb_i(wbs_stb_i),
+        .wbs_cyc_i(wbs_cyc_i),
+        .wbs_we_i(wbs_we_i),
+        .wbs_sel_i(wbs_sel_i),
+        .wbs_dat_i(wbs_dat_i),
+        .wbs_adr_i(wbs_adr_i),
+        .wbs_ack_o(sha1_buf_wbs_ack_o),
+        .wbs_dat_o(sha1_buf_wbs_dat_o));
 
     assign reset = la_data_in[0];
     assign fib_activate = la_data_in[1];
