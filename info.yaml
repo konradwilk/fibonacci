@@ -39,6 +39,8 @@ source:
     - src/clkdiv.v
     - src/fibonacci.v
     - src/wb_logic.v
+    - sha1/src/sha1.v
+    - sha1/src/sha1_wb.v
 
 # gds - check size = 300x300, nothing on metal 5, do a DRC, check 141 tristate buffers, check LVS
 gds:
