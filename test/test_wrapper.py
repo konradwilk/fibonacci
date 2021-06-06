@@ -31,6 +31,9 @@ async def test_wrapper(dut):
     dut.wb_rst_i <= 0
     dut.la_data_in <= 0
 
+    # Hook up Fibonacci
+    dut.la_data_in <= 1 << 1;
+
     dut._log.info("io_out=%s" % (dut.io_out.value));
     # We get these annoying 'ZZ' in there, so we do this dance to get rid of it.
     value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
@@ -42,10 +45,11 @@ async def test_wrapper(dut):
     dut.active <= 1
     # Reset pin is hooked up to la_data_in[0].
     dut.la_data_in <= 1 << 0
-    await ClockCycles(dut.wb_clk_i,2) 
-    
-    dut.la_data_in <= 0 << 0
-    await ClockCycles(dut.wb_clk_i,1) 
+    await ClockCycles(dut.wb_clk_i,2)
+
+    # Hook up Fibonacci engine is hooked up via la_data_in[]
+    dut.la_data_in <= 1 << 1
+    await ClockCycles(dut.wb_clk_i,1)
 
     dut._log.info("io_out=%s" % (dut.io_out.value));
     value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
@@ -53,11 +57,11 @@ async def test_wrapper(dut):
 
     prio_value = 0;
     p_prio_value = 0;
-    
+
     for i in range(50):
 
-        # assert still low
-        assert dut.la_data_in == 0
+        # Assert that reset is down (la_data_in[0]), and Fibonacci is on (la_data_in[1])
+        assert dut.la_data_in == 1 << 1;
 
         value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
         dut._log.info("%2d: io_out = %s" % (i, dut.io_out.value));

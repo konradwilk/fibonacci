@@ -54,6 +54,7 @@ module wrapper_fibonacci  (
     wire [`MPRJ_IO_PADS-1:0] buf_io_out;
     wire [`MPRJ_IO_PADS-1:0] buf_io_oeb;
     wire [2:0] buf_irq;
+    wire fib_activate;
 
     wire sha1_buf_wbs_ack_o;
     wire [31:0] sha1_buf_wbs_dat_o;
@@ -65,27 +66,35 @@ module wrapper_fibonacci  (
 
     `ifdef FORMAL
     // formal can't deal with z, so set all outputs to 0 if not active
-    assign wbs_ack_o    = active ? (sha1_activate ? sha1_buf_wbs_ack_o : buf_wbs_ack_o) : 1'b0;
-    assign wbs_dat_o    = active ? (sha1_activate ? sha1_buf_wbs_dat_o : buf_wbs_dat_o) : 32'b0;
-    assign la_data_out  = active ? (sha1_activate ? sha1_buf_la_data_out : buf_la_data_out) : 32'b0;
-    assign io_out       = active ? (sha1_activate ? sha1_buf_io_out : buf_io_out): {`MPRJ_IO_PADS{1'b0}};
-    assign io_oeb       = active ? (sha1_activate ? sha1_buf_io_oeb : buf_io_oeb): {`MPRJ_IO_PADS{1'b0}};
-    assign irq		= active ? (sha1_activate ? sha1_buf_irq : buf_irq) : 3'b0;
+    assign wbs_ack_o    = active ? (sha1_activate ? sha1_buf_wbs_ack_o : (fib_activate ? buf_wbs_ack_o : 1'b0)) : 1'b0;
+    assign wbs_dat_o    = active ? (sha1_activate ? sha1_buf_wbs_dat_o : (fib_activate ? buf_wbs_dat_o : 32'b0)) : 32'b0;
+    assign la_data_out  = active ? (sha1_activate ? sha1_buf_la_data_out : (fib_activate ? buf_la_data_out : 32'b0)) : 32'b0;
+    assign io_out       = active ? (sha1_activate ? sha1_buf_io_out : (fib_activate ? buf_io_out: {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'b0}};
+    assign io_oeb       = active ? (sha1_activate ? sha1_buf_io_oeb : (fib_activate ? buf_io_oeb: {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'b0}};
+    assign irq		= active ? (sha1_activate ? sha1_buf_irq : (fib_activate ? buf_irq : 3'b0)) : 3'b0;
     `include "properties.v"
     `else
     // tristate buffers
-    assign wbs_ack_o    = active ? (sha1_activate ? sha1_buf_wbs_ack_o : buf_wbs_ack_o) : 1'bz;
-    assign wbs_dat_o    = active ? (sha1_activate ? sha1_buf_wbs_dat_o : buf_wbs_dat_o) : 32'bz;
-    assign la_data_out  = active ? (sha1_activate ? sha1_buf_la_data_out : buf_la_data_out) : 32'bz;
-    assign io_out       = active ? (sha1_activate ? sha1_buf_io_out : buf_io_out) : {`MPRJ_IO_PADS{1'bz}};
-    assign io_oeb       = active ? (sha1_activate ? sha1_buf_io_oeb : buf_io_oeb) : {`MPRJ_IO_PADS{1'bz}};
-    assign irq		= active ? (sha1_activate ? sha1_buf_irq : buf_irq) : 3'bz;
+    // if (activate && sha1_activate)
+    //    assign with sha1 prefix
+    // else if (activate && fib_activate)
+    //    assign with buf prefix
+    // else if (activate)
+    //    assign with zero value.
+    // else if (!activate)
+    //    assign with Z value.
+    assign wbs_ack_o    = active ? (sha1_activate ? sha1_buf_wbs_ack_o : (fib_activate ? buf_wbs_ack_o : 1'b0)): 1'bz;
+    assign wbs_dat_o    = active ? (sha1_activate ? sha1_buf_wbs_dat_o : (fib_activate ? buf_wbs_dat_o : 32'b0)) : 32'bz;
+    assign la_data_out  = active ? (sha1_activate ? sha1_buf_la_data_out : (fib_activate ? buf_la_data_out : 32'b0)) : 32'bz;
+    assign io_out       = active ? (sha1_activate ? sha1_buf_io_out : (fib_activate ? buf_io_out : {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'bz}};
+    assign io_oeb       = active ? (sha1_activate ? sha1_buf_io_oeb : (fib_activate ? buf_io_oeb : {`MPRJ_IO_PADS{1'b0}})) : {`MPRJ_IO_PADS{1'bz}};
+    assign irq		= active ? (sha1_activate ? sha1_buf_irq : (fib_activate ? buf_irq : 3'b0)) : 3'bz;
     `endif
 
     // permanently set oeb so that outputs are always enabled: 0 is output, 1 is high-impedance
     assign buf_io_oeb = {`MPRJ_IO_PADS{1'b0}};
 
-    wire reset = la_data_in[0];
+    wire reset;
 
     wire [5:0] clock_op;
 
@@ -167,6 +176,8 @@ module wrapper_fibonacci  (
             .wbs_ack_o(sha1_buf_wbs_ack_o),
             .wbs_dat_o(sha1_buf_wbs_dat_o));
 
-    assign sha1_activate = la_data_in[1];
+    assign reset = la_data_in[0];
+    assign fib_activate = la_data_in[1];
+    assign sha1_activate = la_data_in[2];
 endmodule
 `default_nettype wire

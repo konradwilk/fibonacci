@@ -1,5 +1,5 @@
 always @(posedge wb_clk_i) begin
-  if (!sha1_activate) begin
+  if (fib_activate && !sha1_activate) begin
     if(active) begin
         // active properties here
 	_active_io_out_:assert(io_out[16:14] == buf_io_out[16:14]);

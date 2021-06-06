@@ -103,8 +103,8 @@ void reset(void)
 	reg_la0_iena = 0;
 	reg_la0_oenb = 0; /* 0x2500,0010 */
 
-	reg_la0_data = 1; /* RST on 0x2500,0000*/
-	reg_la0_data = 0; /* RST off */
+	reg_la0_data = 1 << 0; /* RST on 0x2500,0000*/
+	reg_la0_data = 1 << 1 | 0 << 0; /* RST off, Fibonacci ON  */
 }
 
 void panic(uint32_t line)
