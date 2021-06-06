@@ -179,5 +179,7 @@ module wrapper_fibonacci  (
     assign reset = la_data_in[0];
     assign fib_activate = la_data_in[1];
     assign sha1_activate = la_data_in[2];
+
+    assign sha1_buf_io_out[8] = sha1_activate ? done : 1'b0;
 endmodule
 `default_nettype wire
