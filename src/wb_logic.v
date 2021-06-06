@@ -95,7 +95,8 @@ module wb_logic #(
 			             default:
 					    buffer_o <= NACK;
 				endcase
-                transmit <= 1'b1;
+				if (wbs_adr_i >= BASE_ADDRESS && wbs_adr_i <=CTRL_PANIC)
+                                     transmit <= 1'b1;
 		    end
 		    /* Write case */
 		    if (wb_active && wbs_we_i && &wbs_sel_i) begin
@@ -129,7 +130,8 @@ module wb_logic #(
 				     default:
 					     buffer_o <= NACK;
 			     endcase
-                 transmit <= 1'b1;
+				if (wbs_adr_i >= BASE_ADDRESS && wbs_adr_i <=CTRL_PANIC)
+                                     transmit <= 1'b1;
 		     end
 	     end
      end
