@@ -60,6 +60,7 @@ test_lvs_wrapper:
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -I $(PDK_ROOT)/sky130A/ -s wrapper_fibonacci -s dump -g2012 gds/wrapper_fibonacci.lvs.powered.v  test/dump_wrapper.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper,test.test_wb_logic vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+	! grep failure results.xml
 
 generated.yaml:
 	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" | sed "s|#GCC_PATH|$(GCC_PATH)|" | sed s"|#GCC_PREFIX|$(GCC_PREFIX)|" > $(CURDIR)/generated.yaml
@@ -75,6 +76,7 @@ test_fibonacci:
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -s fibonacci -s dump -g2012 src/fibonacci.v test/dump_fibonacci.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_fibonacci vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+	! grep failure results.xml
 
 prove_fibonacci:
 	sby -f properties.sby
@@ -84,12 +86,14 @@ test_wrapper:
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -s wrapper_fibonacci -s dump -g2012 $(SOURCES) test/dump_wrapper.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper,test.test_wb_logic vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+	! grep failure results.xml
 
 test_wb_logic:
 	rm -rf sim_build/
 	mkdir sim_build/
 	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38  -s wb_logic -s dump -g2012 src/wb_logic.v test/dump_wb_logic.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wb_logic vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
+	! grep failure results.xml
 
 show_%: %.vcd %.gtkw
 	gtkwave $^
