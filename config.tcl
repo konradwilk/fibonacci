@@ -33,5 +33,7 @@ set ::env(FP_PIN_ORDER_CFG) $script_dir/pin_order.cfg
 
 set ::env(RUN_CVC) 0
 
+set ::env(PL_RESIZER_BUFFER_OUTPUT_PORTS) 0
+
 #set ::env(RUN_KLAYOUT_XOR) 0
 #set ::env(RUN_KLAYOUT_DRC) 0
