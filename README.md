@@ -12,4 +12,4 @@ to send and receive data.
 
 This is part of the [zerotoasic](https://www.zerotoasiccourse.com/) multi project submission to fit within a 300um x 300um area.
 
-![GDSII](gds/wrapper_fibonacci.gds.png)
+![GDSII](pics/fibonacci.png)
