@@ -3,7 +3,7 @@
 project:
   title: "Fibonacci"
   description: "Fibonacci emitter connected to [37:8] and controlled via wishbone"
-  picture: pics/fibonacci.png
+  picture: pics/fibonacci.jpg
   author: "Konrad Rzeszutek Wilk"
   github: https://github.com/konradwilk/fibonacci
   license: LICENSE
