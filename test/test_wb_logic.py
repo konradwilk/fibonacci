@@ -14,6 +14,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import cocotb
 import inspect
+import traceback
 from cocotb.clock import Clock
 from cocotb.binary import BinaryValue
 from cocotb.triggers import ClockCycles
@@ -99,8 +100,11 @@ async def test_ctrl(dut, wbs, wrapper, gl):
         dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
         return
 
-    name = dut.fibonacci_switch
-
+    if wrapper:
+        name = dut.wrapper_fibonacci.fibonacci_switch;
+    else:
+        name = dut.fibonacci_switch
+   
     assert (name == 1);
     exp = 1;
     val = await read_val(dut, wbs, CTRL_FIBONACCI_CTRL, exp);
@@ -153,11 +157,15 @@ async def test_clock_op(dut, wbs, wrapper, gl):
         dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
         return
 
+    if wrapper:
+        name = dut.wrapper_fibonacci.clock_op;
+    else:
+        name = dut.clock_op;
     # Default clock is on 0th bit.
-    assert (dut.clock_op == 0x1);
+    assert (name == 0x1);
 
     # Lets reset it
-    dut.clock_op <= 0x0;
+    name <= 0x0;
     exp = 0x0;
     await ClockCycles(dut.wb_clk_i, 5)
 
@@ -173,7 +181,7 @@ async def test_clock_op(dut, wbs, wrapper, gl):
     val = await read_val(dut, wbs, CTRL_FIBONACCI_CLOCK, exp);
     assert (val == exp)
 
-    assert(dut.clock_op == 1<<1);
+    assert(name == 1<<1);
 
 async def test_panic(dut, wbs, wrapper, gl):
 
@@ -181,7 +189,7 @@ async def test_panic(dut, wbs, wrapper, gl):
         dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
         return
     if wrapper:
-        name = dut.WishBone.panic;
+        name = dut.wrapper_fibonacci.WishBone.panic;
     else:
         name = dut.panic;
 
@@ -265,11 +273,11 @@ async def test_wb_logic(dut):
                                       "sel": "sel_i"})
     gl = False
     try:
-        dut.vssd1 <= 0
-        dut.vccd1 <= 1
+        dut.power1 <= 0
+        dut.power2 <= 0
         gl = True
     except:
-        pass
+        traceback.print_exc();
     # This exists in WishBone code only.
     try:
         dut.reset <= 1
@@ -279,13 +287,14 @@ async def test_wb_logic(dut):
         pass
 
     wrapper = False
-    # While this is for for wrapper
+    # While this is for the wrapper
     try:
         await activate_wrapper(dut);
         wrapper = True
     except:
         pass
 
+    dut._log.info("GL=%s, wrapper=%s" % (gl, wrapper));
     await ClockCycles(dut.wb_clk_i, 100)
 
     await test_id(dut, wbs);

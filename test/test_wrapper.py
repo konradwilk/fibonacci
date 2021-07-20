@@ -24,10 +24,28 @@ async def test_wrapper(dut):
 
     clocks_per_phase = 5
     try:
+        dut.RSTB <= 0
+        dut.power1 <= 0;
+        dut.power2 <= 0;
+        dut.power3 <= 0;
+        dut.power4 <= 0;
+
         dut.vssd1 <= 0
         dut.vccd1 <= 1
     except:
         pass
+
+    dut._log.info("Cycling power");
+    await ClockCycles(dut.wb_clk_i, 8)
+    dut.power1 <= 1;
+    await ClockCycles(dut.wb_clk_i, 8)
+    dut.power2 <= 1;
+    await ClockCycles(dut.wb_clk_i, 8)
+    dut.power3 <= 1;
+    await ClockCycles(dut.wb_clk_i, 8)
+    dut.power4 <= 1;
+
+    dut.status <= 0
     dut.wbs_dat_i <= 0
     dut.wbs_dat_o <= 0
     dut.wbs_sel_i <= 0
