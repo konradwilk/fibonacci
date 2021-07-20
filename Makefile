@@ -14,6 +14,8 @@ export COCOTB_REDUCED_LOG_FMT=1
 
 all: multi_project
 
+tests: test_fibonacci test_wrapper test_gds test_lvs_wrapper
+
 test_gds: gds/wrapper_fibonacci.lvs.powered.v
 	$(MAKE) -C gds
 
