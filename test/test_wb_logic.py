@@ -21,17 +21,29 @@ from cocotb.triggers import ClockCycles
 from cocotbext.wishbone.driver import WishboneMaster
 from cocotbext.wishbone.driver import WBOp
 
+def status(dut, s):
+    try:
+        b=bytes(s, 'ascii');
+        dut.status <= int.from_bytes(b, byteorder='big')
+    except:
+        pass
+        #traceback.print_exc();
+
 async def read_val(dut, wbs, cmd, exp):
     wbRes = await wbs.send_cycle([WBOp(cmd)]);
     dut._log.info("%s = Read %s expected %s" % (hex(cmd), hex(wbRes[0].datrd.integer), hex(exp)))
+    status(dut, "0x%s READ %s" % (hex(cmd), hex(wbRes[0].datrd.integer)));
     return wbRes[0].datrd.integer
 
 async def write_val(dut, wbs, cmd, val):
     dut._log.info("%s <= Writing %s" % (hex(cmd), hex(val)));
+    status(dut, "0x%s WRITE %s" % (hex(cmd), hex(val)));
     wbRes = await wbs.send_cycle([WBOp(cmd, dat=val)]);
+
     val = wbRes[0].datrd.integer
     dut._log.info("%s <= (ret=%s)" % (hex(cmd),  hex(val)));
     return val
+
 
 CTRL_GET_NR         = 0x30000000
 CTRL_GET_ID         = 0x30000004
@@ -256,6 +268,8 @@ async def activate_wrapper(dut):
     dut.la_data_in <= 0 << 0
     await ClockCycles(dut.wb_clk_i,1)
 
+    status(dut, "WB=Active ON");
+
 @cocotb.test()
 async def test_wb_logic(dut):
     clock = Clock(dut.wb_clk_i, 10, units="ns")
@@ -311,4 +325,5 @@ async def test_wb_logic(dut):
 
     await test_panic(dut, wbs, wrapper, gl);
 
+    status(dut, "Test #2 Done");
     #await test_unknown(dut, wbs);

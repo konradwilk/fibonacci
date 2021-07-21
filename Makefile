@@ -8,6 +8,12 @@ SEED = 1
 MULTI_PROJECT_DIR ?= $(PWD)/../multi_project_tools
 GCC_PATH ?= /opt/riscv64-unknown-elf-toolchain-10.2.0-2020.12.8-x86_64-linux-centos6/bin
 GCC_PREFIX ?= riscv64-unknown-elf
+CHIP_VIS_DIR ?= $(PWD)/../sky130-chip-vis
+PDK = sky130_fd_sc_hd
+GL = gds/wrapper_fibonacci.lvs.powered.v
+GDS = gds/wrapper_fibonacci.gds
+VCD = wrapper.vcd
+CELLS = $(PDK_ROOT)/sky130A/libs.ref/$(PDK)/verilog/$(PDK).v
 
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
@@ -63,6 +69,35 @@ test_lvs_wrapper:
 	iverilog -o sim_build/sim.vvp -DMPRJ_IO_PADS=38 -I $(PDK_ROOT)/sky130A/ -s dump -g2012 gds/wrapper_fibonacci.lvs.powered.v  test/dump_wrapper.v
 	PYTHONOPTIMIZE=${NOASSERT} MODULE=test.test_wrapper,test.test_wb_logic vvp -M $$(cocotb-config --prefix)/cocotb/libs -m libcocotbvpi_icarus sim_build/sim.vvp
 	! grep failure results.xml
+
+
+
+visualize: test_lvs_wrapper
+	rm -Rf build
+	mkdir -p build
+	cp $(CELLS) build/tmp_$(PDK)_cells_fixed.v
+	sed -i 's/wire 1/wire __1/g' build/tmp_$(PDK)_cells_fixed.v
+	python3 $(CHIP_VIS_DIR)/chip-vis.py \
+                    --cell_models build/tmp_$(PDK)_cells_fixed.v \
+                    --gl_netlist $(GL) \
+                    --vcd $(VCD) \
+                    --gds $(GDS) \
+                    --prefix "dump" \
+                    --status_var "dump.status" \
+		    --start_status "Active ON" \
+                    --rst "dump.reset" \
+                    --clk "dump.wb_clk_i" \
+                    --outfile "vis.gif" \
+                    --mode 4 \
+                    --scale 3 \
+                    --fps 10 \
+                    --downscale 1 \
+                    --blur 1 \
+                    --exp_grow 1.2 \
+                    --exp_decay 0.8 \
+                    --lin_grow 0.15 \
+                    --lin_decay 0.15 \
+                    --build_dir ./
 
 generated.yaml:
 	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" | sed "s|#GCC_PATH|$(GCC_PATH)|" | sed s"|#GCC_PREFIX|$(GCC_PREFIX)|" > $(CURDIR)/generated.yaml

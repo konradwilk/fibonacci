@@ -48,7 +48,7 @@ async def test_wrapper(dut):
     await ClockCycles(dut.wb_clk_i, 8)
     dut.power4 <= 1;
 
-    dut.status <= 0
+    dut.status <= int.from_bytes(b'Power ON', byteorder='big')
     dut.wbs_dat_i <= 0
     dut.wbs_dat_o <= 0
     dut.wbs_sel_i <= 0
@@ -58,6 +58,7 @@ async def test_wrapper(dut):
     dut.wb_rst_i <= 0
     dut.wbs_stb_i <= 0
     dut.wbs_cyc_i <= 0
+
     await ClockCycles(dut.wb_clk_i, 5)
 
     dut.active <= 0
@@ -74,6 +75,7 @@ async def test_wrapper(dut):
 
     await ClockCycles(dut.wb_clk_i, 100)
 
+    dut.status <= int.from_bytes(b'Active ON', byteorder='big')
     dut.active <= 1
     # Reset pin is hooked up to la_data_in[0].
     dut.la_data_in <= 1 << 0
@@ -81,6 +83,7 @@ async def test_wrapper(dut):
     
     dut.la_data_in <= 0 << 0
     await ClockCycles(dut.wb_clk_i,1) 
+    dut.status <= int.from_bytes(b'RST DONE', byteorder='big')
 
     dut._log.info("io_out=%s" % (dut.io_out.value));
     value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
@@ -97,6 +100,7 @@ async def test_wrapper(dut):
         value = BinaryValue(str(dut.io_out.value)[:-8].replace('z','').replace('x',''));
         dut._log.info("%2d: io_out = %s" % (i, dut.io_out.value));
         current_value  = int(value);
+        dut.status <= int.from_bytes(b'i=%d' % (i), byteorder='big')
 
         if (i == 0) or ((i > 0) and ((i % 44) == 0)):
             prio_value = 0;
@@ -113,3 +117,4 @@ async def test_wrapper(dut):
 
         await ClockCycles(dut.wb_clk_i,1) 
 
+    dut.status <= int.from_bytes(b'Test #1 done', byteorder='big')
