@@ -43,6 +43,7 @@ module dump;
     wire [31:0] la_data_out;
     wire [31:0] la_oenb;
 
+    wire reset = la_data_in[0];
     wire [2:0] irq;
 
     wire active;
