@@ -22,6 +22,9 @@ async def test_wrapper(dut):
     clock = Clock(dut.wb_clk_i, 10, units="ns")
     cocotb.fork(clock.start())
 
+    # Keep reset low
+    dut.la_data_in <= 0 << 0
+
     clocks_per_phase = 5
     try:
         dut.RSTB <= 0
