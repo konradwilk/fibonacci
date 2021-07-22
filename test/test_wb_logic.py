@@ -109,7 +109,14 @@ async def test_read_write(dut, wbs):
 async def test_ctrl(dut, wbs, wrapper, gl):
 
     if gl:
-        dut._log.info("Skipping %s" % (inspect.currentframe().f_code.co_name));
+        val = await write_val(dut, wbs, CTRL_FIBONACCI_CTRL, 0);
+        assert(val == 1);
+
+        await ClockCycles(dut.wb_clk_i, 10)
+
+        val = await write_val(dut, wbs, CTRL_FIBONACCI_CTRL, 1);
+        assert(val == 1);
+
         return
 
     if wrapper:
@@ -135,6 +142,10 @@ async def test_ctrl(dut, wbs, wrapper, gl):
     assert name == 1
 
 async def test_values(dut, wbs, wrapper):
+
+    # Power ON fibonacci
+    val = await write_val(dut, wbs, CTRL_FIBONACCI_CTRL, 1);
+    assert(val == 1);
 
     if wrapper:
         exp = 0;
@@ -242,7 +253,7 @@ async def test_unknown(dut, wbs):
     val = await read_val(dut, wbs, cmd, exp);
     assert (val == 0);
 
-async def activate_wrapper(dut):
+async def activate_wrapper(dut, wbs):
 
     await ClockCycles(dut.wb_clk_i, 5)
 
@@ -269,6 +280,10 @@ async def activate_wrapper(dut):
     await ClockCycles(dut.wb_clk_i,1)
 
     status(dut, "WB=Active ON");
+
+    # Power OFF fibonacci
+    val = await write_val(dut, wbs, CTRL_FIBONACCI_CTRL, 0);
+    assert(val == 1);
 
 @cocotb.test()
 async def test_wb_logic(dut):
@@ -303,7 +318,7 @@ async def test_wb_logic(dut):
     wrapper = False
     # While this is for the wrapper
     try:
-        await activate_wrapper(dut);
+        await activate_wrapper(dut, wbs);
         wrapper = True
     except:
         pass
