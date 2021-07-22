@@ -89,7 +89,7 @@ visualize: test_lvs_wrapper
                     --rst "dump.reset" \
                     --clk "dump.wb_clk_i" \
                     --outfile "vis.gif" \
-                    --mode 4 \
+                    --mode 3 \
                     --scale 3 \
                     --fps 10 \
                     --downscale 1 \
@@ -99,6 +99,7 @@ visualize: test_lvs_wrapper
                     --lin_grow 0.15 \
                     --lin_decay 0.15 \
                     --build_dir ./
+	for file in `ls *.gif`; do gifsicle -O3 --colors 256 --batch $$file & done; wait
 
 generated.yaml:
 	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" | sed "s|#GCC_PATH|$(GCC_PATH)|" | sed s"|#GCC_PREFIX|$(GCC_PREFIX)|" > $(CURDIR)/generated.yaml
