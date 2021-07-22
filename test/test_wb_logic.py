@@ -32,12 +32,12 @@ def status(dut, s):
 async def read_val(dut, wbs, cmd, exp):
     wbRes = await wbs.send_cycle([WBOp(cmd)]);
     dut._log.info("%s = Read %s expected %s" % (hex(cmd), hex(wbRes[0].datrd.integer), hex(exp)))
-    status(dut, "0x%s READ %s" % (hex(cmd), hex(wbRes[0].datrd.integer)));
+    status(dut, "%s READ %s" % (hex(cmd), hex(wbRes[0].datrd.integer)));
     return wbRes[0].datrd.integer
 
 async def write_val(dut, wbs, cmd, val):
     dut._log.info("%s <= Writing %s" % (hex(cmd), hex(val)));
-    status(dut, "0x%s WRITE %s" % (hex(cmd), hex(val)));
+    status(dut, "%s WRITE %s" % (hex(cmd), hex(val)));
     wbRes = await wbs.send_cycle([WBOp(cmd, dat=val)]);
 
     val = wbRes[0].datrd.integer
