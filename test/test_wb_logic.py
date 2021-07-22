@@ -119,6 +119,9 @@ async def test_ctrl(dut, wbs, wrapper, gl):
 
         return
 
+    val = await write_val(dut, wbs, CTRL_FIBONACCI_CTRL, 1);
+    assert(val == 1);
+
     if wrapper:
         name = dut.wrapper_fibonacci.fibonacci_switch;
     else:
