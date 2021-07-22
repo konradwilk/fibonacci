@@ -100,6 +100,7 @@ visualize: test_lvs_wrapper
                     --lin_decay 0.15 \
                     --build_dir ./
 	for file in `ls *.gif`; do gifsicle -O3 --colors 256 --batch $$file & done; wait
+	mv *.gif pics/
 
 generated.yaml:
 	cat $(CURDIR)/projects.yaml | sed "s|#HOME|$(CURDIR)/../|g" | sed "s|#GCC_PATH|$(GCC_PATH)|" | sed s"|#GCC_PREFIX|$(GCC_PREFIX)|" > $(CURDIR)/generated.yaml
