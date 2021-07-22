@@ -83,6 +83,7 @@ visualize: test_lvs_wrapper
                     --vcd $(VCD) \
                     --gds $(GDS) \
                     --prefix "dump" \
+		    --strip ".wrapper_fibonacci." \
                     --status_var "dump.status" \
 		    --start_status "Active ON" \
                     --rst "dump.reset" \
