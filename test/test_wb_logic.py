@@ -305,8 +305,8 @@ async def test_wb_logic(dut):
                                       "sel": "sel_i"})
     gl = False
     try:
-        dut.power1 <= 0
-        dut.power2 <= 0
+        dut.wrapper_fibonacci.vssd1 <= 0
+        dut.wrapper_fibonacci.vccd1 <= 1
         gl = True
     except:
         traceback.print_exc();
