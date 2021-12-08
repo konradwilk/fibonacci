@@ -14,7 +14,7 @@ async def test_start(dut):
     dut.power2 <= 0;
     dut.power3 <= 0;
     dut.power4 <= 0;
-    dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value <= 0;
+    dut.uut.mprj.wrapper_fibonacci_3.wbs_dat_i.value <= 0;
 
     dut._log.info("Cycling power");
     await ClockCycles(dut.clock, 8)
@@ -34,19 +34,19 @@ async def test_start(dut):
     # wrapper.v has  .active     (la_data_in[32+0])
     # wrapper.c: reg_la1_ena = 0;
     #            reg_la1_data = 1; /* 0x2500,0004 */
-    await RisingEdge(dut.uut.mprj.wrapper_fibonacci.active)
+    await RisingEdge(dut.uut.mprj.wrapper_fibonacci_3.active)
     dut._log.info("Active ON");
 
 async def test_wb(dut, i):
 
     ack_str = "";
-    addr = int(dut.uut.mprj.wrapper_fibonacci.wbs_adr_i.value);
-    data = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_o.value);
-    ack = int(dut.uut.mprj.wrapper_fibonacci.wbs_ack_o.value);
+    addr = int(dut.uut.mprj.wrapper_fibonacci_3.wbs_adr_i.value);
+    data = int(dut.uut.mprj.wrapper_fibonacci_3.wbs_dat_o.value);
+    ack = int(dut.uut.mprj.wrapper_fibonacci_3.wbs_ack_o.value);
     try:
-        data_i = int(dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value);
+        data_i = int(dut.uut.mprj.wrapper_fibonacci_3.wbs_dat_i.value);
     except:
-        dut._log.info("%4d %s %s DATA_IN=RAW[%s] DATA_OUT=%s" % (i, hex(addr), ack_str,  dut.uut.mprj.wrapper_fibonacci.wbs_dat_i.value, hex(data)));
+        dut._log.info("%4d %s %s DATA_IN=RAW[%s] DATA_OUT=%s" % (i, hex(addr), ack_str,  dut.uut.mprj.wrapper_fibonacci_3.wbs_dat_i.value, hex(data)));
         pass
 
     if (addr >= 0x30000000):
@@ -81,8 +81,8 @@ async def test_values(dut):
     # reg_la0_ena = 0; /* 0x2500,0010 */
     # reg_la0_data = 1; /* RST on 0x2500,0000*/
 
-    await RisingEdge(dut.uut.mprj.wrapper_fibonacci.Fibonacci.reset)
-    await FallingEdge(dut.uut.mprj.wrapper_fibonacci.Fibonacci.reset)
+    await RisingEdge(dut.uut.mprj.wrapper_fibonacci_3.Fibonacci.reset)
+    await FallingEdge(dut.uut.mprj.wrapper_fibonacci_3.Fibonacci.reset)
     dut._log.info("Reset done");
 
     await ClockCycles(dut.clock,1)

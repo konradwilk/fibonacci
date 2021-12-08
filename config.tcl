@@ -4,16 +4,16 @@ set script_dir [file dirname [file normalize [info script]]]
 set ::env(DESIGN_NAME) wrapper_fibonacci
 
 # Change if needed
-set ::env(VERILOG_FILES) "/work/src/wrapper.v \
-	/work/src/fibonacci.v \
-	/work/src/wb_logic.v \
-	/work/src/clkdiv.v"
+set ::env(VERILOG_FILES) "$::env(DESIGN_DIR)/src/wrapper.v \
+	$::env(DESIGN_DIR)/src/fibonacci.v \
+	$::env(DESIGN_DIR)/src/wb_logic.v \
+	$::env(DESIGN_DIR)/src/clkdiv.v"
 
 # Fill this
-set ::env(CLOCK_PERIOD) "10"
+set ::env(CLOCK_PERIOD) "50"
 set ::env(CLOCK_PORT) "wb_clk_i"
 
-set ::env(DIE_AREA) "0 0 300 300"
+set ::env(DIE_AREA) "0 0 350 350"
 set ::env(FP_SIZING) absolute
 
 set ::env(DESIGN_IS_CORE) 0
@@ -26,8 +26,8 @@ if { [file exists $filename] == 1} {
 	source $filename
 }
 
-set ::env(VDD_NETS) [list {vccd1} {vccd2} {vdda1} {vdda2}]
-set ::env(GND_NETS) [list {vssd1} {vssd2} {vssa1} {vssa2}]
+set ::env(VDD_NETS) [list {vccd1}]
+set ::env(GND_NETS) [list {vssd1}]
 
 set ::env(FP_PIN_ORDER_CFG) $script_dir/pin_order.cfg
 
@@ -35,5 +35,11 @@ set ::env(RUN_CVC) 0
 
 set ::env(PL_RESIZER_BUFFER_OUTPUT_PORTS) 0
 
-#set ::env(RUN_KLAYOUT_XOR) 0
-#set ::env(RUN_KLAYOUT_DRC) 0
+set ::env(RUN_KLAYOUT_XOR) 0
+set ::env(RUN_KLAYOUT_DRC) 0
+
+set ::env(PL_RESIZER_HOLD_SLACK_MARGIN) 0.8
+set ::env(GLB_RESIZER_HOLD_SLACK_MARGIN) 0.8
+
+#set ::env(PL_RESIZER_SETUP_SLACK_MARGIN) 0.5
+#set ::env(GLB_RESIZER_SETUP_SLACK_MARGIN) 0.5
