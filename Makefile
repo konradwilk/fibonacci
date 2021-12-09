@@ -17,6 +17,7 @@ CELLS = $(PDK_ROOT)/sky130A/libs.ref/$(PDK)/verilog/$(PDK).v
 
 # COCOTB variables
 export COCOTB_REDUCED_LOG_FMT=1
+export LIBPYTHON_LOC=$(shell cocotb-config --libpython)
 
 all: multi_project
 
